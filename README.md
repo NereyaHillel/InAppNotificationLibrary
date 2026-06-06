@@ -4,7 +4,7 @@
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=24)
 [![Language](https://img.shields.io/badge/Language-Kotlin-blue.svg)](https://kotlinlang.org/)
 
-A lightweight, modern Android SDK for seamlessly registering users and handling in-app notifications. Built entirely in Kotlin utilizing modern Android architecture (Coroutines, Retrofit, and Gson).
+A lightweight, modern Android SDK for seamlessly registering devices, fetching in-app notifications, tracking interactions, and reporting crashes. Built entirely in Kotlin utilizing modern Android architecture (Coroutines, Retrofit, and Gson).
 
 ## 🚀 Installation
 
@@ -41,8 +41,8 @@ dependencies {
 
 ## 💻 Usage
 
-### Initialization
-Initialize the SDK in your `Application` class or main `Activity`.
+### 1. Initialization
+Initialize the SDK once, ideally in your `Application` class or main `Activity`. The SDK automatically securely fetches the device ID for you.
 
 ```kotlin
 import com.example.inappnotifications.InAppNotifier
@@ -50,30 +50,79 @@ import com.example.inappnotifications.InAppNotifier
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        InAppNotifier.initialize(context = this, apiKey = "YOUR_API_KEY")
+        
+        InAppNotifier.initialize(
+            context = this,
+            userId = "user_123", // The logged-in user's ID
+            backendBaseUrl = "[https://api.yourdomain.com/](https://api.yourdomain.com/)" // Your backend URL
+        )
     }
 }
 ```
 
-### Registering a User
+### 2. Registering the Device
+Once initialized, register the device to your backend so it can start receiving targeted campaigns. All network calls are `suspend` functions and must be run inside a Coroutine.
+
 ```kotlin
-import com.example.inappnotifications.models.RegisterRequest
 import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
 
-launch {
-    val request = RegisterRequest(userId = "user_123", deviceToken = "device_fcm_token")
-    if (InAppNotifier.registerUser(request)) {
-        println("User registered!")
+lifecycleScope.launch {
+    val success = InAppNotifier.registerDevice()
+    if (success) {
+        println("Device successfully registered!")
     }
 }
 ```
 
-### Handling Interactions
-```kotlin
-import com.example.inappnotifications.models.InteractionRequest
+### 3. Fetching and Displaying Notifications
+You can fetch pending notifications and easily display them using the built-in UI popup builder.
 
-val interaction = InteractionRequest(notificationId = "notif_456", actionTaken = "CLICKED")
-InAppNotifier.logInteraction(interaction)
+```kotlin
+import com.example.inappnotifications.NotificationPosition
+
+lifecycleScope.launch {
+    // 1. Fetch notifications from the backend
+    val notifications = InAppNotifier.getNotifications()
+    
+    if (!notifications.isNullOrEmpty()) {
+        val firstNotification = notifications.first()
+        
+        // 2. Display a built-in alert dialog
+        InAppNotifier.showNotificationPopup(
+            context = this@MainActivity,
+            notification = firstNotification,
+            position = NotificationPosition.TOP, // TOP, CENTER, or BOTTOM
+            positiveButtonText = "Got it!",
+            onPositiveClick = {
+                println("User dismissed the notification.")
+            }
+        )
+    }
+}
+```
+*Note: The `showNotificationPopup` automatically tracks the interaction (sends a tracking ping to the backend) when the user clicks the positive button!*
+
+### 4. Manual Interaction Tracking
+If you choose to build your own custom UI instead of using `showNotificationPopup`, you can manually track interactions when a user clicks your custom notification.
+
+```kotlin
+lifecycleScope.launch {
+    val tracked = InAppNotifier.trackInteraction(notificationId = "notif_456")
+}
+```
+
+### 5. Crash Reporting
+The SDK includes a simple endpoint for logging crash details or caught exceptions to your backend.
+
+```kotlin
+try {
+    // Some risky operation
+} catch (e: Exception) {
+    lifecycleScope.launch {
+        InAppNotifier.reportCrash("Exception caught in MainActivity: ${e.message}")
+    }
+}
 ```
 
 ---
