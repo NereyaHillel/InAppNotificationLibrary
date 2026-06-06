@@ -1,6 +1,6 @@
 # InAppNotifications
 
-[![Release](https://jitpack.io/v/NereyaHillel/InAppNotifications.svg)](https://jitpack.io/#NereyaHillel/InAppNotifications)
+[![](https://jitpack.io/v/NereyaHillel/InAppNotificationLibrary.svg)](https://jitpack.io/#NereyaHillel/InAppNotificationLibrary)
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=24)
 [![Language](https://img.shields.io/badge/Language-Kotlin-blue.svg)](https://kotlinlang.org/)
 
