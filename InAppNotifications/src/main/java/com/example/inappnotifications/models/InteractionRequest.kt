@@ -1,4 +1,6 @@
 package com.example.inappnotifications.models
 
-class InteractionRequest {
-}
+data class CrashReportRequest(
+    val user_id: String,
+    val crash_details: String
+)
