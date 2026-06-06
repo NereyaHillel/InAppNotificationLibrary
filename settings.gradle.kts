@@ -19,5 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
+
+
 rootProject.name = "InAppNotificationLibrary"
 include(":InAppNotifications")

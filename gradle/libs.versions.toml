@@ -1,0 +1,24 @@
+[versions]
+appcompat = "1.6.1"
+junit = "4.13.2"
+runner = "1.1.5"
+espresso = "3.5.1"
+retrofit = "2.9.0"
+coroutines = "1.7.3"
+
+[libraries]
+# UI & Testing (Mapped to modern AndroidX so your build succeeds)
+appcompat-v7 = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+runner = { group = "androidx.test.ext", name = "junit", version.ref = "runner" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+
+# Retrofit & Gson
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+
+# Coroutines
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+[plugins]
+maven-publish = { id = "maven-publish" }

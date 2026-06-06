@@ -6,7 +6,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 internal object ApiClient {
 
     fun create(baseUrl: String): NotificationApiService {
-        // Safely format the base URL
         val safeBaseUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
 
         val retrofit = Retrofit.Builder()

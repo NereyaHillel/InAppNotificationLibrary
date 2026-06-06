@@ -107,20 +107,16 @@ object InAppNotifier {
         val builder = AlertDialog.Builder(context)
             .setTitle("New Message")
             .setMessage(notification.message)
-            .setCancelable(false) // Forces them to click a button
+            .setCancelable(false)
 
-        // 1. Setup Positive Button (Always tracks interaction to your backend)
         builder.setPositiveButton(positiveButtonText) { dialog, _ ->
-            // SDK's hidden internal tracking
             CoroutineScope(Dispatchers.IO).launch {
                 trackInteraction(notification._id)
             }
-            // Execute the developer's custom code
             onPositiveClick?.invoke()
             dialog.dismiss()
         }
 
-        // 2. Setup Negative Button
         builder.setNegativeButton(negativeButtonText) { dialog, _ ->
             onNegativeClick?.invoke()
             dialog.dismiss()
