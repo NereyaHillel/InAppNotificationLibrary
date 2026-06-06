@@ -155,6 +155,10 @@ object InAppNotifier {
             window.attributes = layoutParams
         }
 
+        CoroutineScope(Dispatchers.IO).launch {
+            trackInteraction(notification._id)
+        }
+
         dialog.show()
     }
 }
