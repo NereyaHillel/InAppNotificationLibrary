@@ -17,7 +17,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("[https://jitpack.io](https://jitpack.io)") }
+        maven { url = uri("https://jitpack.io") }
     }
 }
 ```
@@ -27,7 +27,7 @@ In your app-level `build.gradle.kts` (`Module :app`), add the SDK:
 
 ```kotlin
 dependencies {
-    implementation("com.github.NereyaHillel:InAppNotifications:v1.0.1")
+    implementation("com.github.NereyaHillel:InAppNotificationLibrary:1.0.1")
 }
 ```
 

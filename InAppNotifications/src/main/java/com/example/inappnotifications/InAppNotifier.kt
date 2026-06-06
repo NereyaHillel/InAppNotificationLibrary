@@ -103,6 +103,12 @@ object InAppNotifier {
         onNeutralClick: (() -> Unit)? = null
     ) {
         if (!isInitialized) return
+        if (notification.status == "read") {
+            Log.d(TAG, "Notification ${notification._id} already handled. Skipping popup.")
+            return
+        }
+
+        if (!isInitialized) return
 
         val builder = AlertDialog.Builder(context)
             .setTitle("New Message")
