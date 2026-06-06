@@ -8,6 +8,15 @@ import com.example.inappnotifications.api.NotificationApiService
 import com.example.inappnotifications.models.CrashReportRequest
 import com.example.inappnotifications.models.InAppNotification
 import com.example.inappnotifications.models.RegisterDeviceRequest
+import android.app.AlertDialog
+import android.view.Gravity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+enum class NotificationPosition {
+    TOP, CENTER, BOTTOM
+}
 
 object InAppNotifier {
     private const val TAG = "InAppNotifier"
@@ -80,5 +89,70 @@ object InAppNotifier {
             Log.e(TAG, "Crash report failed", e)
             false
         }
+    }
+
+    fun showNotificationPopup(
+        context: Context,
+        notification: InAppNotification,
+        position: NotificationPosition = NotificationPosition.CENTER,
+        positiveButtonText: String = "OK",
+        onPositiveClick: (() -> Unit)? = null,
+        negativeButtonText: String = "Cancel",
+        onNegativeClick: (() -> Unit)? = null,
+        neutralButtonText: String? = null,
+        onNeutralClick: (() -> Unit)? = null
+    ) {
+        if (!isInitialized) return
+
+        val builder = AlertDialog.Builder(context)
+            .setTitle("New Message")
+            .setMessage(notification.message)
+            .setCancelable(false) // Forces them to click a button
+
+        // 1. Setup Positive Button (Always tracks interaction to your backend)
+        builder.setPositiveButton(positiveButtonText) { dialog, _ ->
+            // SDK's hidden internal tracking
+            CoroutineScope(Dispatchers.IO).launch {
+                trackInteraction(notification._id)
+            }
+            // Execute the developer's custom code
+            onPositiveClick?.invoke()
+            dialog.dismiss()
+        }
+
+        // 2. Setup Negative Button
+        builder.setNegativeButton(negativeButtonText) { dialog, _ ->
+            onNegativeClick?.invoke()
+            dialog.dismiss()
+        }
+
+        if (neutralButtonText != null) {
+            builder.setNeutralButton(neutralButtonText) { dialog, _ ->
+                onNeutralClick?.invoke()
+                dialog.dismiss()
+            }
+        }
+
+        val dialog = builder.create()
+
+        dialog.window?.let { window ->
+            val layoutParams = window.attributes
+            when (position) {
+                NotificationPosition.TOP -> {
+                    layoutParams.gravity = Gravity.TOP
+                    layoutParams.y = 150
+                }
+                NotificationPosition.BOTTOM -> {
+                    layoutParams.gravity = Gravity.BOTTOM
+                    layoutParams.y = 150
+                }
+                NotificationPosition.CENTER -> {
+                    layoutParams.gravity = Gravity.CENTER
+                }
+            }
+            window.attributes = layoutParams
+        }
+
+        dialog.show()
     }
 }
