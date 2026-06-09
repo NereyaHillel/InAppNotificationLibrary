@@ -19,19 +19,21 @@ enum class NotificationPosition {
 }
 
 object InAppNotifier {
+    private const val BASE_URL = "https://in-app-notifications-api.vercel.app/"
     private const val TAG = "InAppNotifier"
+
 
     private var isInitialized = false
     private var currentUserId = ""
     private var currentDeviceId = ""
     private lateinit var apiService: NotificationApiService
 
-    fun initialize(context: Context, userId: String, backendBaseUrl: String) {
+    fun initialize(context: Context, userId: String) {
         if (isInitialized) return
 
         currentUserId = userId
         currentDeviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "unknown_device"
-        apiService = ApiClient.create(backendBaseUrl)
+        apiService = ApiClient.create(BASE_URL)
 
         isInitialized = true
         Log.d(TAG, "SDK Initialized: User $currentUserId")
@@ -103,12 +105,11 @@ object InAppNotifier {
         onNeutralClick: (() -> Unit)? = null
     ) {
         if (!isInitialized) return
+
         if (notification.status == "read") {
             Log.d(TAG, "Notification ${notification._id} already handled. Skipping popup.")
             return
         }
-
-        if (!isInitialized) return
 
         val builder = AlertDialog.Builder(context)
             .setTitle("New Message")
@@ -116,9 +117,6 @@ object InAppNotifier {
             .setCancelable(false)
 
         builder.setPositiveButton(positiveButtonText) { dialog, _ ->
-            CoroutineScope(Dispatchers.IO).launch {
-                trackInteraction(notification._id)
-            }
             onPositiveClick?.invoke()
             dialog.dismiss()
         }
