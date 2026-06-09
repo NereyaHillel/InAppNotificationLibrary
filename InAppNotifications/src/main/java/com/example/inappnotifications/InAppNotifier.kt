@@ -25,13 +25,17 @@ object InAppNotifier {
 
     private var isInitialized = false
     private var currentUserId = ""
+    private var currentDeviceName = ""
     private var currentDeviceId = ""
+
     private lateinit var apiService: NotificationApiService
 
     fun initialize(context: Context, userId: String) {
         if (isInitialized) return
 
         currentUserId = userId
+
+        currentDeviceName = Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME) ?: "unknown_device"
         currentDeviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "unknown_device"
         apiService = ApiClient.create(BASE_URL)
 
@@ -43,7 +47,7 @@ object InAppNotifier {
         if (!isInitialized) return false
 
         return try {
-            val request = RegisterDeviceRequest(currentDeviceId, currentUserId)
+            val request = RegisterDeviceRequest(currentDeviceName,currentDeviceId, currentUserId )
             val response = apiService.registerDevice(request)
             response.isSuccessful
         } catch (e: Exception) {

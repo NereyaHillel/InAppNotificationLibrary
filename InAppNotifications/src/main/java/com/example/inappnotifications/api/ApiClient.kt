@@ -12,7 +12,8 @@ internal object ApiClient {
             .baseUrl(safeBaseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+            .create(NotificationApiService::class.java)
 
-        return retrofit.create(NotificationApiService::class.java)
+        return retrofit
     }
 }
