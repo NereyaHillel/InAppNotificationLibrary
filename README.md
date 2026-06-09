@@ -53,8 +53,7 @@ class MyApplication : Application() {
         
         InAppNotifier.initialize(
             context = this,
-            userId = "user_123", // The logged-in user's ID
-            backendBaseUrl = "[https://api.yourdomain.com/](https://api.yourdomain.com/)" // Your backend URL
+            userId = "EXAMPLE_USER_ID" // The logged-in user's ID
         )
     }
 }
