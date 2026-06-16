@@ -74,7 +74,13 @@ lifecycleScope.launch {
 }
 ```
 
-### 3. Fetching and Displaying Notifications
+### 3. Add Required Permissions
+Add the Internet permission to your client app's AndroidManifest.xml:
+```kotlin
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+### 4. Fetching and Displaying Notifications
 You can fetch pending notifications and easily display them using the built-in UI popup builder.
 
 ```kotlin
@@ -102,7 +108,7 @@ lifecycleScope.launch {
 ```
 *Note: The `showNotificationPopup` automatically tracks the interaction (sends a tracking ping to the backend) when the user clicks the positive button!*
 
-### 4. Manual Interaction Tracking
+### 5. Manual Interaction Tracking
 If you choose to build your own custom UI instead of using `showNotificationPopup`, you can manually track interactions when a user clicks your custom notification.
 
 ```kotlin
@@ -111,7 +117,7 @@ lifecycleScope.launch {
 }
 ```
 
-### 5. Crash Reporting
+### 6. Crash Reporting
 The SDK includes a simple endpoint for logging crash details or caught exceptions to your backend.
 
 ```kotlin

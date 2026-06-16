@@ -4,7 +4,8 @@ data class InAppNotification(
     val _id: String,
     val campaign_id: String,
     val message: String,
-    val status: String
+    val status: String,
+    val title: String
 )
 
 data class NotificationResponse(
