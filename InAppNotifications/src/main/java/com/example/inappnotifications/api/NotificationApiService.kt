@@ -23,7 +23,10 @@ internal interface NotificationApiService {
 
     @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("api/v1/sdk/notifications/{id}/interact")
-    suspend fun trackInteraction(@Path("id") notificationId: String): Response<Unit>
+    suspend fun trackInteraction(
+        @Path("id") notificationId: String,
+        @Query("action") action: String
+    ): Response<Unit>
 
     @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("api/v1/sdk/crash-report")

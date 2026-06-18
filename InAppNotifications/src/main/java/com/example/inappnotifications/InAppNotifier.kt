@@ -88,10 +88,11 @@ object InAppNotifier {
         }
     }
 
-    suspend fun trackInteraction(notificationId: String): Boolean {
+    suspend fun trackInteraction(notificationId: String, action: String): Boolean {
         if (!isInitialized) return false
         return try {
-            val response = apiService.trackInteraction(notificationId)
+            // Pass the action to the API
+            val response = apiService.trackInteraction(notificationId, action)
             response.isSuccessful
         } catch (e: Exception) {
             Log.e(TAG, "Interaction tracking failed", e)
@@ -171,7 +172,7 @@ object InAppNotifier {
             btnPositive.text = positiveButtonText
             btnPositive.visibility = View.VISIBLE
             btnPositive.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch { trackInteraction(notification._id) }
+                CoroutineScope(Dispatchers.IO).launch { trackInteraction(notification._id,"clicked") }
                 onPositiveClick?.invoke()
                 dialog.dismiss()
             }
@@ -185,7 +186,7 @@ object InAppNotifier {
             btnNegative.text = negativeButtonText
             btnNegative.visibility = View.VISIBLE
             btnNegative.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch { trackInteraction(notification._id) }
+                CoroutineScope(Dispatchers.IO).launch { trackInteraction(notification._id,"dismissed") }
                 onNegativeClick?.invoke()
                 dialog.dismiss()
             }
@@ -199,7 +200,7 @@ object InAppNotifier {
             btnNeutral.text = neutralButtonText
             btnNeutral.visibility = View.VISIBLE
             btnNeutral.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch { trackInteraction(notification._id) }
+                CoroutineScope(Dispatchers.IO).launch { trackInteraction(notification._id,"dismissed") }
                 onNeutralClick?.invoke()
                 dialog.dismiss()
             }
