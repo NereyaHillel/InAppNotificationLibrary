@@ -122,14 +122,12 @@ object InAppNotifier {
         negativeButtonText: String? = null,
         onNegativeClick: (() -> Unit)? = null,
         neutralButtonText: String? = null,
-        onNeutralClick: (() -> Unit)? = null
+        onNeutralClick: (() -> Unit)? = null,
+        onDismiss: (() -> Unit)? = null // NEW: Tells the app when the popup closes
     ) {
         if (!isInitialized) return
 
-        if (notification.status == "read") {
-            Log.d(TAG, "Notification ${notification._id} already handled.")
-            return
-        }
+        if (notification.status == "read") return
 
         val inflater = LayoutInflater.from(context)
         val customView = inflater.inflate(R.layout.dialog_custom_notification, null)
@@ -141,14 +139,14 @@ object InAppNotifier {
         if (!notification.message.isNullOrEmpty()) {
             messageView.text = notification.message
             messageView.visibility = View.VISIBLE
+        } else {
+            messageView.visibility = View.GONE
         }
 
         if (position == NotificationPosition.CENTER) {
             val imageView = customView.findViewById<ImageView>(R.id.dialogImage)
-
             if (!imageUrl.isNullOrEmpty()) {
                 imageView.visibility = View.VISIBLE
-
                 Glide.with(context)
                     .load(imageUrl)
                     .placeholder(fallbackImageRes)
@@ -158,13 +156,22 @@ object InAppNotifier {
             }
         }
 
-        val builder = AlertDialog.Builder(context).setView(customView)
-        val dialog = builder.create()
+        // FIX: Switch from AlertDialog to a pure custom Dialog for positioning control
+        val dialog = android.app.Dialog(context)
+        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
+        dialog.setContentView(customView)
+
+        // Trigger the queue when the dialog closes for ANY reason
+        dialog.setOnDismissListener {
+            onDismiss?.invoke()
+        }
+
         var buttonCount = 0
 
+        // FIX: Strictly hide buttons if no text is provided, fixing the XML bug
         val btnPositive = customView.findViewById<Button>(R.id.btnPositive)
-        positiveButtonText?.let { text ->
-            btnPositive.text = text
+        if (positiveButtonText != null) {
+            btnPositive.text = positiveButtonText
             btnPositive.visibility = View.VISIBLE
             btnPositive.setOnClickListener {
                 CoroutineScope(Dispatchers.IO).launch { trackInteraction(notification._id) }
@@ -172,11 +179,13 @@ object InAppNotifier {
                 dialog.dismiss()
             }
             buttonCount++
+        } else {
+            btnPositive.visibility = View.GONE
         }
 
         val btnNegative = customView.findViewById<Button>(R.id.btnNegative)
-        negativeButtonText?.let { text ->
-            btnNegative.text = text
+        if (negativeButtonText != null) {
+            btnNegative.text = negativeButtonText
             btnNegative.visibility = View.VISIBLE
             btnNegative.setOnClickListener {
                 CoroutineScope(Dispatchers.IO).launch { trackInteraction(notification._id) }
@@ -184,11 +193,13 @@ object InAppNotifier {
                 dialog.dismiss()
             }
             buttonCount++
+        } else {
+            btnNegative.visibility = View.GONE
         }
 
         val btnNeutral = customView.findViewById<Button>(R.id.btnNeutral)
-        neutralButtonText?.let { text ->
-            btnNeutral.text = text
+        if (neutralButtonText != null) {
+            btnNeutral.text = neutralButtonText
             btnNeutral.visibility = View.VISIBLE
             btnNeutral.setOnClickListener {
                 CoroutineScope(Dispatchers.IO).launch { trackInteraction(notification._id) }
@@ -196,21 +207,30 @@ object InAppNotifier {
                 dialog.dismiss()
             }
             buttonCount++
+        } else {
+            btnNeutral.visibility = View.GONE
         }
 
         dialog.setCancelable(buttonCount == 0)
 
         dialog.window?.let { window ->
             window.setBackgroundDrawableResource(android.R.color.transparent)
+
+            window.setLayout(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            window.decorView.setPadding(48, 48, 48, 48)
+
             val layoutParams = window.attributes
             when (position) {
                 NotificationPosition.TOP -> {
-                    layoutParams.gravity = Gravity.TOP
-                    layoutParams.y = 150
+                    layoutParams.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                    layoutParams.y = 80
                 }
                 NotificationPosition.BOTTOM -> {
-                    layoutParams.gravity = Gravity.BOTTOM
-                    layoutParams.y = 150
+                    layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                    layoutParams.y = 80
                 }
                 NotificationPosition.CENTER -> {
                     layoutParams.gravity = Gravity.CENTER
