@@ -123,7 +123,7 @@ object InAppNotifier {
         onNegativeClick: (() -> Unit)? = null,
         neutralButtonText: String? = null,
         onNeutralClick: (() -> Unit)? = null,
-        onDismiss: (() -> Unit)? = null // NEW: Tells the app when the popup closes
+        onDismiss: (() -> Unit)? = null
     ) {
         if (!isInitialized) return
 
@@ -156,19 +156,16 @@ object InAppNotifier {
             }
         }
 
-        // FIX: Switch from AlertDialog to a pure custom Dialog for positioning control
         val dialog = android.app.Dialog(context)
         dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
         dialog.setContentView(customView)
 
-        // Trigger the queue when the dialog closes for ANY reason
         dialog.setOnDismissListener {
             onDismiss?.invoke()
         }
 
         var buttonCount = 0
 
-        // FIX: Strictly hide buttons if no text is provided, fixing the XML bug
         val btnPositive = customView.findViewById<Button>(R.id.btnPositive)
         if (positiveButtonText != null) {
             btnPositive.text = positiveButtonText
@@ -238,7 +235,6 @@ object InAppNotifier {
             }
             window.attributes = layoutParams
         }
-
         dialog.show()
     }
 }

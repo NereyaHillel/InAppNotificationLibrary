@@ -35,7 +35,7 @@
         android:src="@drawable/ic_notification"
         android:scaleType="centerCrop"
         android:layout_marginBottom="24dp"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,7 +51,7 @@
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:visibility="visible" />
+            android:visibility="gone" />
         <Button
             android:id="@+id/btnNegative"
             android:layout_width="0dp"
@@ -61,7 +61,7 @@
             android:background="@drawable/bg_btn_red_pill"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/btnNeutral"
@@ -72,7 +72,7 @@
             android:background="@drawable/bg_btn_blue_pill"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
     </LinearLayout>
 
