@@ -143,11 +143,12 @@ object InAppNotifier {
             messageView.visibility = View.VISIBLE
         }
 
-        if (position == NotificationPosition.TOP || position == NotificationPosition.BOTTOM) {
-
+        if (position == NotificationPosition.CENTER) {
             val imageView = customView.findViewById<ImageView>(R.id.dialogImage)
+
             if (!imageUrl.isNullOrEmpty()) {
                 imageView.visibility = View.VISIBLE
+
                 Glide.with(context)
                     .load(imageUrl)
                     .placeholder(fallbackImageRes)
