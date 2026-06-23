@@ -219,36 +219,21 @@ object InAppNotifier {
     }
 
     /**
-     * Displays an in-app notification popup dialog with customizable content and buttons.
+     * Displays an in-app notification popup dialog using Server-Driven UI (SDUI) pattern.
      *
-     * This method creates and displays a styled dialog with the notification content.
-     * The dialog position and button visibility are determined by the provided parameters.
+     * This method reads all UI configurations directly from the notification object,
+     * including position, images, button texts, and deep-link routing. The SDK acts
+     * as an autonomous rendering and routing engine based entirely on the JSON payload.
      *
      * @param context The Android application context.
-     * @param notification The [InAppNotification] object to display.
-     * @param position The position where the dialog should appear (default: CENTER).
-     * @param imageUrl Optional URL of an image to display in the dialog.
-     * @param fallbackImageRes The drawable resource ID to use if imageUrl fails to load.
-     * @param positiveButtonText Optional text for the positive button.
-     * @param onPositiveClick Optional callback invoked when positive button is clicked.
-     * @param negativeButtonText Optional text for the negative button.
-     * @param onNegativeClick Optional callback invoked when negative button is clicked.
-     * @param neutralButtonText Optional text for the neutral button.
-     * @param onNeutralClick Optional callback invoked when neutral button is clicked.
+     * @param notification The [InAppNotification] object containing all SDUI configurations.
+     * @param fallbackImageRes The drawable resource ID to use if image loading fails (default: ic_notification).
      * @param onDismiss Optional callback invoked when dialog is dismissed.
      */
     fun showNotificationPopup(
         context: Context,
         notification: InAppNotification,
-        position: NotificationPosition = NotificationPosition.CENTER,
-        imageUrl: String? = null,
         fallbackImageRes: Int = R.drawable.ic_notification,
-        positiveButtonText: String? = null,
-        onPositiveClick: (() -> Unit)? = null,
-        negativeButtonText: String? = null,
-        onNegativeClick: (() -> Unit)? = null,
-        neutralButtonText: String? = null,
-        onNeutralClick: (() -> Unit)? = null,
         onDismiss: (() -> Unit)? = null
     ) {
         if (!isInitialized) {
@@ -279,12 +264,15 @@ object InAppNotifier {
                 messageView.visibility = View.GONE
             }
 
+            // Parse position from server (default to CENTER if invalid/null)
+            val position = parsePosition(notification.position)
+
             // Setup image for CENTER position
             if (position == NotificationPosition.CENTER) {
                 val imageView = customView.findViewById<ImageView>(R.id.dialogImage)
-                if (!imageUrl.isNullOrEmpty()) {
+                if (!notification.image_url.isNullOrEmpty()) {
                     imageView.visibility = View.VISIBLE
-                    loadImageWithGlide(context, imageUrl, fallbackImageRes, imageView)
+                    loadImageWithGlide(context, notification.image_url, fallbackImageRes, imageView)
                 }
             }
 
@@ -297,18 +285,16 @@ object InAppNotifier {
                 onDismiss?.invoke()
             }
 
-            // Setup buttons
+            // Setup buttons dynamically from server data
             var buttonCount = 0
 
+            // Positive button
             val btnPositive = customView.findViewById<Button>(R.id.btnPositive)
-            if (positiveButtonText != null) {
-                btnPositive.text = positiveButtonText
+            if (!notification.btn_positive.isNullOrEmpty()) {
+                btnPositive.text = notification.btn_positive
                 btnPositive.visibility = View.VISIBLE
                 btnPositive.setOnClickListener {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        trackInteraction(notification._id, "clicked")
-                    }
-                    onPositiveClick?.invoke()
+                    handlePositiveClick(context, notification)
                     dialog.dismiss()
                 }
                 buttonCount++
@@ -316,15 +302,15 @@ object InAppNotifier {
                 btnPositive.visibility = View.GONE
             }
 
+            // Negative button
             val btnNegative = customView.findViewById<Button>(R.id.btnNegative)
-            if (negativeButtonText != null) {
-                btnNegative.text = negativeButtonText
+            if (!notification.btn_negative.isNullOrEmpty()) {
+                btnNegative.text = notification.btn_negative
                 btnNegative.visibility = View.VISIBLE
                 btnNegative.setOnClickListener {
                     CoroutineScope(Dispatchers.IO).launch {
                         trackInteraction(notification._id, "dismissed")
                     }
-                    onNegativeClick?.invoke()
                     dialog.dismiss()
                 }
                 buttonCount++
@@ -332,15 +318,15 @@ object InAppNotifier {
                 btnNegative.visibility = View.GONE
             }
 
+            // Neutral button
             val btnNeutral = customView.findViewById<Button>(R.id.btnNeutral)
-            if (neutralButtonText != null) {
-                btnNeutral.text = neutralButtonText
+            if (!notification.btn_neutral.isNullOrEmpty()) {
+                btnNeutral.text = notification.btn_neutral
                 btnNeutral.visibility = View.VISIBLE
                 btnNeutral.setOnClickListener {
                     CoroutineScope(Dispatchers.IO).launch {
                         trackInteraction(notification._id, "dismissed")
                     }
-                    onNeutralClick?.invoke()
                     dialog.dismiss()
                 }
                 buttonCount++
@@ -380,6 +366,73 @@ object InAppNotifier {
             Log.d(TAG, "Displayed notification dialog for notification ${notification._id}")
         } catch (e: Exception) {
             Log.e(TAG, "Error displaying notification popup", e)
+        }
+    }
+
+    /**
+     * Parses position string from server into NotificationPosition enum.
+     *
+     * @param positionString The position string from server (e.g., "TOP", "BOTTOM", "CENTER")
+     * @return The parsed NotificationPosition, defaults to CENTER if invalid/null
+     */
+    private fun parsePosition(positionString: String?): NotificationPosition {
+        return when (positionString?.uppercase()) {
+            "TOP" -> NotificationPosition.TOP
+            "BOTTOM" -> NotificationPosition.BOTTOM
+            "CENTER" -> NotificationPosition.CENTER
+            else -> {
+                if (positionString != null) {
+                    Log.w(TAG, "Invalid position '$positionString', defaulting to CENTER")
+                }
+                NotificationPosition.CENTER
+            }
+        }
+    }
+
+    /**
+     * Handles positive button click with internal deep-link routing.
+     *
+     * This method tracks the interaction, validates and normalizes the deep link,
+     * and fires an Intent to open the URL.
+     *
+     * @param context The Android application context
+     * @param notification The notification containing the link
+     */
+    private fun handlePositiveClick(context: Context, notification: InAppNotification) {
+        // Track interaction
+        CoroutineScope(Dispatchers.IO).launch {
+            trackInteraction(notification._id, "clicked")
+        }
+
+        // Handle deep link routing if link is provided
+        if (!notification.link.isNullOrEmpty()) {
+            try {
+                val normalizedUrl = normalizeUrl(notification.link)
+                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(normalizedUrl))
+                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+                Log.d(TAG, "Opened deep link: $normalizedUrl")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to open deep link: ${notification.link}", e)
+            }
+        }
+    }
+
+    /**
+     * Normalizes a URL by ensuring it has a valid scheme.
+     *
+     * If the URL lacks http:// or https://, it automatically prepends https://
+     *
+     * @param url The raw URL string from server
+     * @return The normalized URL with valid scheme
+     */
+    private fun normalizeUrl(url: String): String {
+        val trimmed = url.trim()
+        return if (!trimmed.startsWith("http://", ignoreCase = true) &&
+            !trimmed.startsWith("https://", ignoreCase = true)) {
+            "https://$trimmed"
+        } else {
+            trimmed
         }
     }
 

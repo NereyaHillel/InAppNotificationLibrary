@@ -124,27 +124,37 @@ The following permissions are automatically declared in the library manifest:
 
 ### 4️⃣ Fetch and Display Notifications
 
-```kotlin
-import com.example.inappnotifications.NotificationPosition
+### 4. Fetch and Display Notifications (SDUI Pattern)
 
+The SDK now uses **Server-Driven UI (SDUI)** architecture. All UI configurations (position, buttons, images, deep links) are controlled by the backend JSON payload. Simply fetch and display:
+
+```kotlin
 lifecycleScope.launch {
     // Fetch notifications
     val notifications = InAppNotifier.getNotifications()
     
     notifications?.forEach { notification ->
-        // Display notification
+        // Display notification - SDK handles everything from the JSON payload
         InAppNotifier.showNotificationPopup(
             context = this@MainActivity,
             notification = notification,
-            position = NotificationPosition.CENTER,
-            positiveButtonText = "Accept",
-            onPositiveClick = {
-                Log.d("Notifications", "User accepted")
+            onDismiss = {
+                // Optional: Handle dismissal
+                Log.d("Notifications", "Notification dismissed")
             }
         )
     }
 }
 ```
+
+**Server-Driven Fields:**
+The notification JSON now supports these SDUI fields:
+- `position`: "TOP", "CENTER", or "BOTTOM"
+- `image_url`: URL for notification image
+- `link`: Deep link URL (opened on positive button click)
+- `btn_positive`: Text for primary action button
+- `btn_negative`: Text for secondary action button
+- `btn_neutral`: Text for tertiary action button
 
 ---
 
@@ -180,46 +190,64 @@ For detailed documentation, see [complete API reference](https://nereyahillel.gi
 
 ---
 
-## 💡 Advanced Usage
+## Advanced Usage
 
-### Custom Dialog Positioning
+### Server-Driven UI Example JSON
 
-```kotlin
-// Top position
-InAppNotifier.showNotificationPopup(
-    context, notification,
-    position = NotificationPosition.TOP
-)
+The backend controls all UI aspects. Here's an example notification payload:
 
-// Center (default)
-InAppNotifier.showNotificationPopup(
-    context, notification,
-    position = NotificationPosition.CENTER
-)
-
-// Bottom position
-InAppNotifier.showNotificationPopup(
-    context, notification,
-    position = NotificationPosition.BOTTOM
-)
+```json
+{
+  "notifications": [
+    {
+      "_id": "notif_123",
+      "campaign_id": "camp_456",
+      "title": "Special Offer!",
+      "message": "Get 50% off your next purchase",
+      "status": "delivered",
+      "position": "CENTER",
+      "image_url": "https://example.com/offer.jpg",
+      "link": "https://example.com/shop/offer",
+      "btn_positive": "Shop Now",
+      "btn_negative": "Maybe Later",
+      "btn_neutral": null
+    }
+  ]
+}
 ```
 
-### Complete Example with All Options
+### Displaying Multiple Notifications Sequentially
+
+```kotlin
+lifecycleScope.launch {
+    val notifications = InAppNotifier.getNotifications() ?: return@launch
+    
+    var currentIndex = 0
+    
+    fun showNext() {
+        if (currentIndex < notifications.size) {
+            val notification = notifications[currentIndex]
+            currentIndex++
+            
+            InAppNotifier.showNotificationPopup(
+                context = this@MainActivity,
+                notification = notification,
+                onDismiss = { showNext() } // Show next when dismissed
+            )
+        }
+    }
+    
+    showNext()
+}
+```
+
+### Custom Fallback Image
 
 ```kotlin
 InAppNotifier.showNotificationPopup(
     context = this@MainActivity,
     notification = notification,
-    position = NotificationPosition.CENTER,
-    imageUrl = notification.imageUrl,
-    fallbackImageRes = R.drawable.ic_default,
-    positiveButtonText = "Accept",
-    onPositiveClick = { handleAccept() },
-    negativeButtonText = "Decline",
-    onNegativeClick = { handleDecline() },
-    neutralButtonText = "Learn More",
-    onNeutralClick = { openWebsite() },
-    onDismiss = { logDismissal() }
+    fallbackImageRes = R.drawable.my_custom_fallback
 )
 ```
 

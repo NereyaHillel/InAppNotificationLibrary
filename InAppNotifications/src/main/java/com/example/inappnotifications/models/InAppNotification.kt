@@ -5,7 +5,14 @@ data class InAppNotification(
     val campaign_id: String,
     val message: String,
     val status: String,
-    val title: String
+    val title: String,
+    // SDUI fields - all nullable, server-driven
+    val position: String? = null,
+    val image_url: String? = null,
+    val link: String? = null,
+    val btn_positive: String? = null,
+    val btn_negative: String? = null,
+    val btn_neutral: String? = null
 )
 
 data class NotificationResponse(
