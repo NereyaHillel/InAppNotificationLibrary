@@ -151,6 +151,20 @@ object InAppNotifier {
             if (response.isSuccessful) {
                 val notifications = response.body()?.notifications
                 Log.d(TAG, "Retrieved ${notifications?.size ?: 0} notifications")
+                
+                // Debug: Log each notification's SDUI fields
+                notifications?.forEachIndexed { index, notification ->
+                    Log.d(TAG, "=== Notification $index from API ===")
+                    Log.d(TAG, "  _id: ${notification._id}")
+                    Log.d(TAG, "  title: ${notification.title}")
+                    Log.d(TAG, "  position: ${notification.position}")
+                    Log.d(TAG, "  btn_positive: ${notification.btn_positive}")
+                    Log.d(TAG, "  btn_negative: ${notification.btn_negative}")
+                    Log.d(TAG, "  btn_neutral: ${notification.btn_neutral}")
+                    Log.d(TAG, "  link: ${notification.link}")
+                    Log.d(TAG, "================================")
+                }
+                
                 notifications
             } else {
                 Log.w(TAG, "Failed to fetch notifications: ${response.code()}")
@@ -246,6 +260,20 @@ object InAppNotifier {
             return
         }
 
+        // Debug logging for SDUI fields
+        Log.d(TAG, "=== SDUI Notification Debug ===")
+        Log.d(TAG, "ID: ${notification._id}")
+        Log.d(TAG, "Title: ${notification.title}")
+        Log.d(TAG, "Message: ${notification.message}")
+        Log.d(TAG, "Status: ${notification.status}")
+        Log.d(TAG, "Position: ${notification.position}")
+        Log.d(TAG, "Image URL: ${notification.image_url}")
+        Log.d(TAG, "Link: ${notification.link}")
+        Log.d(TAG, "Btn Positive: ${notification.btn_positive}")
+        Log.d(TAG, "Btn Negative: ${notification.btn_negative}")
+        Log.d(TAG, "Btn Neutral: ${notification.btn_neutral}")
+        Log.d(TAG, "===============================")
+
         try {
             val inflater = LayoutInflater.from(context)
             @Suppress("InflateParams")
@@ -266,6 +294,7 @@ object InAppNotifier {
 
             // Parse position from server (default to CENTER if invalid/null)
             val position = parsePosition(notification.position)
+            Log.d(TAG, "Parsed position: $position")
 
             // Setup image for CENTER position
             if (position == NotificationPosition.CENTER) {
@@ -291,6 +320,7 @@ object InAppNotifier {
             // Positive button
             val btnPositive = customView.findViewById<Button>(R.id.btnPositive)
             if (!notification.btn_positive.isNullOrEmpty()) {
+                Log.d(TAG, "Setting positive button: ${notification.btn_positive}")
                 btnPositive.text = notification.btn_positive
                 btnPositive.visibility = View.VISIBLE
                 btnPositive.setOnClickListener {
@@ -299,12 +329,14 @@ object InAppNotifier {
                 }
                 buttonCount++
             } else {
+                Log.d(TAG, "Positive button is null or empty")
                 btnPositive.visibility = View.GONE
             }
 
             // Negative button
             val btnNegative = customView.findViewById<Button>(R.id.btnNegative)
             if (!notification.btn_negative.isNullOrEmpty()) {
+                Log.d(TAG, "Setting negative button: ${notification.btn_negative}")
                 btnNegative.text = notification.btn_negative
                 btnNegative.visibility = View.VISIBLE
                 btnNegative.setOnClickListener {
@@ -315,6 +347,7 @@ object InAppNotifier {
                 }
                 buttonCount++
             } else {
+                Log.d(TAG, "Negative button is null or empty")
                 btnNegative.visibility = View.GONE
             }
 

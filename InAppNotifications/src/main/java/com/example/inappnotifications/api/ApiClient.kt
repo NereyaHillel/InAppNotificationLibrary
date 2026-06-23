@@ -42,12 +42,25 @@ internal object ApiClient {
             .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .writeTimeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                val request = chain.request()
+                Log.d(TAG, "HTTP Request: ${request.method} ${request.url}")
+                val response = chain.proceed(request)
+                val responseBody = response.peekBody(Long.MAX_VALUE)
+                Log.d(TAG, "HTTP Response: ${response.code} - Body: ${responseBody.string()}")
+                response
+            }
             .build()
+
+        // Configure Gson to be lenient and ignore unknown fields
+        val gson = com.google.gson.GsonBuilder()
+            .setLenient()
+            .create()
 
         val retrofit = Retrofit.Builder()
             .baseUrl(safeBaseUrl)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
         return retrofit.create(NotificationApiService::class.java)
