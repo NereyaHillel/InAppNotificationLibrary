@@ -454,18 +454,21 @@ object InAppNotifier {
     /**
      * Normalizes a URL by ensuring it has a valid scheme.
      *
-     * If the URL lacks http:// or https://, it automatically prepends https://
+     * If the URL completely lacks a scheme (no "://"), it automatically prepends https://
+     * Otherwise, it trusts the provided scheme (http, https, amazon, etc.)
      *
      * @param url The raw URL string from server
      * @return The normalized URL with valid scheme
      */
     private fun normalizeUrl(url: String): String {
         val trimmed = url.trim()
-        return if (!trimmed.startsWith("http://", ignoreCase = true) &&
-            !trimmed.startsWith("https://", ignoreCase = true)) {
-            "https://$trimmed"
-        } else {
+
+        // If it already has a scheme separator, trust it completely.
+        return if (trimmed.contains("://")) {
             trimmed
+        } else {
+            // It has no scheme (e.g., "www.example.com"), so we make it a safe web link.
+            "https://$trimmed"
         }
     }
 
