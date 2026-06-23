@@ -3,1098 +3,1585 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InAppNotifications - Android Documentation</title>
-    <meta name="description" content="Professional Android library for in-app notifications with server integration, crash reporting, and interaction tracking.">
+    <meta name="description" content="Professional documentation for InAppNotifications, an Android Server-Driven UI library for in-app notifications.">
+    <title>InAppNotifications Documentation</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         :root {
-            --primary: #1f2937;
-            --primary-light: #374151;
-            --primary-lighter: #f3f4f6;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --text-dark: #1f2937;
-            --text-light: #6b7280;
-            --border: #e5e7eb;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.02);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --bg: #f4f7fb;
+            --surface: #ffffff;
+            --surface-alt: #f8fbff;
+            --text: #172033;
+            --muted: #5f6b85;
+            --heading: #0f1f48;
+            --primary: #123b75;
+            --primary-strong: #0b2b58;
+            --primary-soft: #eaf2ff;
+            --border: #dbe5f2;
+            --success: #0f9d7a;
+            --warning: #d99000;
+            --shadow: 0 18px 48px rgba(15, 31, 72, 0.08);
+            --radius: 18px;
+            --header-height: 76px;
+            --code-bg: #0f172a;
+            --code-panel: #111b31;
+            --line: rgba(255,255,255,0.08);
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            color: var(--text-dark);
-            background: #ffffff;
-            line-height: 1.6;
+            margin: 0;
+            font-family: Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(180deg, #f7faff 0%, #f4f7fb 180px, #f4f7fb 100%);
+            color: var(--text);
+            line-height: 1.7;
         }
 
-        /* Navigation */
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            padding: 1rem 0;
+        a { color: var(--primary); text-decoration: none; }
+        a:hover { color: var(--primary-strong); }
+        img { max-width: 100%; }
+        code { font-family: Consolas, Monaco, 'Courier New', monospace; }
+
+        .topbar {
             position: sticky;
             top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            height: var(--header-height);
+            background: rgba(11, 31, 74, 0.96);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 30px rgba(9, 22, 51, 0.16);
         }
 
-        nav {
-            max-width: 1200px;
+        .topbar-inner {
+            max-width: 1440px;
             margin: 0 auto;
-            padding: 0 2rem;
+            height: 100%;
+            padding: 0 24px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
+            gap: 20px;
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .brand {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 14px;
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: 0.02em;
         }
 
-        nav ul {
-            list-style: none;
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            position: relative;
+            background: linear-gradient(135deg, #4ea3ff, #b7d4ff);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+        }
+
+        .brand-mark::before,
+        .brand-mark::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            margin: auto;
+        }
+
+        .brand-mark::before {
+            width: 18px;
+            height: 12px;
+            border: 3px solid #0f2248;
+            border-radius: 8px;
+            top: 10px;
+        }
+
+        .brand-mark::after {
+            width: 6px;
+            height: 6px;
+            background: #0f2248;
+            border-radius: 50%;
+            bottom: 10px;
+            box-shadow: -10px 0 0 #0f2248, 10px 0 0 #0f2248;
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.72);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+        }
+
+        .header-links {
             display: flex;
-            gap: 2rem;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: opacity 0.2s;
-        }
-
-        nav a:hover {
-            opacity: 0.8;
-        }
-
-        /* Main layout */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* Hero */
-        .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            color: white;
-            padding: 6rem 0;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.375rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s;
-            display: inline-block;
+        .header-link {
+            color: #dbe7ff;
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: 0.92rem;
+            transition: all 0.2s ease;
         }
 
-        .btn-primary {
-            background: white;
-            color: var(--accent);
+        .header-link:hover {
+            color: #fff;
+            border-color: rgba(255,255,255,0.34);
+            background: rgba(255,255,255,0.08);
         }
 
-        .btn-primary:hover {
-            background: var(--primary-lighter);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+        .page {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 30px 24px 48px;
         }
 
-        .btn-secondary {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Features */
-        .features {
-            padding: 4rem 0;
-            background: var(--primary-lighter);
-        }
-
-        .features h2 {
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            text-align: center;
-        }
-
-        .features-grid {
+        .hero {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
+            grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr);
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .hero-card,
+        .sidebar,
+        .section-card,
+        .feature-card,
+        .mini-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .hero-card {
+            padding: 34px;
+            background:
+                radial-gradient(circle at top right, rgba(78,163,255,0.22), transparent 32%),
+                linear-gradient(180deg, #ffffff, #f9fbff);
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.84rem;
+            margin-bottom: 18px;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d7ff9, #8ec3ff);
+            box-shadow: 0 0 0 4px rgba(45,127,249,0.15);
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--heading);
+            line-height: 1.2;
+            margin: 0 0 14px;
+        }
+
+        h1 { font-size: clamp(2rem, 3vw, 3rem); }
+        h2 { font-size: clamp(1.55rem, 2vw, 2rem); scroll-margin-top: calc(var(--header-height) + 24px); }
+        h3 { font-size: 1.2rem; scroll-margin-top: calc(var(--header-height) + 24px); }
+        h4 { font-size: 1rem; scroll-margin-top: calc(var(--header-height) + 24px); }
+        p { margin: 0 0 16px; color: var(--text); }
+        .muted { color: var(--muted); }
+
+        .hero-actions,
+        .badge-row,
+        .stats,
+        .feature-grid,
+        .summary-grid,
+        .card-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .badge-row {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-top: 22px;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: #f6f9fe;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--heading);
+        }
+
+        .pill::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #2b76f7, #8cc2ff);
+        }
+
+        .summary-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-top: 22px;
+        }
+
+        .mini-card {
+            padding: 18px;
+        }
+
+        .mini-card strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--heading);
+        }
+
+        .stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .stat {
+            padding: 22px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #102b5d, #0d2147);
+            color: #fff;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 1.7rem;
+            margin-bottom: 6px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 290px minmax(0, 1fr);
+            gap: 28px;
+            align-items: start;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: calc(var(--header-height) + 18px);
+            padding: 22px;
+        }
+
+        .sidebar h2 {
+            font-size: 1rem;
+            margin-bottom: 14px;
+        }
+
+        .toc {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 8px;
+        }
+
+        .toc a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            color: var(--muted);
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .toc a::before,
+        .section-icon,
+        .icon-chip::before {
+            content: "";
+            flex: 0 0 auto;
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #2d7ff9, #9fcaff);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+        }
+
+        .toc a:hover,
+        .toc a:focus {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .content {
+            display: grid;
+            gap: 24px;
+        }
+
+        .section-card {
+            padding: 30px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 8px;
+        }
+
+        .section-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .section-icon::before,
+        .section-icon::after {
+            content: "";
+            position: absolute;
+        }
+
+        .icon-install::before {
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            transform: rotate(45deg);
+            left: 5px;
+            top: 2px;
+        }
+
+        .icon-requirements::before,
+        .icon-api::before,
+        .icon-license::before,
+        .icon-links::before {
+            left: 4px;
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border: 2px solid #fff;
+            border-radius: 3px;
+        }
+
+        .icon-quickstart::before,
+        .icon-advanced::before,
+        .icon-best::before {
+            left: 4px;
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border-left: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            transform: rotate(-45deg);
+        }
+
+        .icon-sdui::before,
+        .icon-backend::before,
+        .icon-architecture::before {
+            left: 3px;
+            top: 3px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
+        .icon-sdui::after,
+        .icon-backend::after,
+        .icon-architecture::after {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #fff;
+            left: 7px;
+            top: 7px;
+        }
+
+        .icon-troubleshooting::before {
+            left: 7px;
+            top: 3px;
+            width: 4px;
+            height: 8px;
+            background: #fff;
+            border-radius: 2px;
+        }
+
+        .icon-troubleshooting::after {
+            left: 7px;
+            bottom: 3px;
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        .feature-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
         }
 
         .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: var(--shadow);
-            transition: all 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .feature-card .icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            padding: 20px;
         }
 
         .feature-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .feature-card .icon-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: var(--heading);
+            margin-bottom: 12px;
+        }
+
+        .feature-card .icon-chip::before {
+            width: 16px;
+            height: 16px;
+            border-radius: 5px;
+        }
+
+        .step {
+            margin: 22px 0 0;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+
+        .step:first-of-type {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 0;
+        }
+
+        .file-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            background: #eef4ff;
             color: var(--primary);
+            margin: 8px 0 10px;
+            border: 1px solid #d5e3fb;
         }
 
-        .feature-card p {
-            color: var(--text-light);
-            line-height: 1.8;
+        .file-label::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            background: linear-gradient(135deg, #2d7ff9, #8fc3ff);
         }
 
-        /* Content sections */
-        .content-section {
-            padding: 4rem 0;
-            border-bottom: 1px solid var(--border);
+        .note,
+        .tip,
+        .warning-box {
+            border-radius: 16px;
+            padding: 18px 18px 18px 20px;
+            margin: 16px 0;
+            border: 1px solid var(--border);
+            background: var(--surface-alt);
         }
 
-        .content-section:last-child {
-            border-bottom: none;
+        .note { border-left: 4px solid #2d7ff9; }
+        .tip { border-left: 4px solid var(--success); }
+        .warning-box { border-left: 4px solid var(--warning); }
+
+        .check-list,
+        .text-list {
+            margin: 0;
+            padding-left: 20px;
         }
 
-        .content-section h2 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary);
+        .check-list li,
+        .text-list li { margin-bottom: 10px; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
         }
 
-        .content-section h3 {
-            font-size: 1.5rem;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-
-        .content-section h4 {
-            font-size: 1.1rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary-light);
-            font-weight: 600;
-        }
-
-        /* Code blocks */
-        pre {
-            background: var(--primary);
-            color: #e5e7eb;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
+        .table-wrap {
             overflow-x: auto;
-            margin: 1rem 0;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            border-radius: 16px;
         }
 
-        code {
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            background: var(--primary-lighter);
-            padding: 0.2rem 0.4rem;
-            border-radius: 0.25rem;
-            font-size: 0.9rem;
-        }
-
-        pre code {
-            background: none;
-            padding: 0;
-            color: inherit;
-        }
-
-        /* Lists */
-        ul, ol {
-            margin: 1rem 0 1rem 2rem;
-            line-height: 1.8;
-        }
-
-        li {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1.5rem 0;
-            box-shadow: var(--shadow);
-            border-radius: 0.5rem;
-            overflow: hidden;
+            background: #fff;
         }
 
         th, td {
-            padding: 1rem;
-            text-align: left;
+            padding: 14px 16px;
             border-bottom: 1px solid var(--border);
+            text-align: left;
         }
 
         th {
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
+            background: #f7faff;
+            color: var(--heading);
+            font-size: 0.95rem;
         }
 
-        tr:hover {
-            background: var(--primary-lighter);
+        tr:last-child td { border-bottom: none; }
+
+        pre[class*="language-"] {
+            margin: 0 0 14px;
+            padding: 24px !important;
+            border-radius: 18px;
+            background: var(--code-bg) !important;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+            overflow: auto;
+            line-height: 1.6;
         }
 
-        /* Sidebar Navigation */
-        .sidebar-container {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 3rem;
-        }
-
-        aside {
-            position: sticky;
-            top: 80px;
-            height: fit-content;
-        }
-
-        .sidebar-link {
+        code[class*="language-"] {
+            font-size: 0.93rem;
+            text-shadow: none !important;
+            color: #e2e8f0 !important;
             display: block;
-            padding: 0.75rem 1rem;
-            color: var(--text-dark);
-            text-decoration: none;
-            border-left: 3px solid transparent;
-            transition: all 0.2s;
         }
 
-        .sidebar-link:hover {
-            background: var(--primary-lighter);
-            border-left-color: var(--accent);
-            padding-left: 1.25rem;
+        :not(pre) > code {
+            background: #1e293b;
+            color: #e0f2fe;
+            padding: 0.22rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.90em;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            font-weight: 500;
         }
 
-        .sidebar-link.active {
-            color: var(--accent);
-            border-left-color: var(--accent);
-            background: var(--primary-lighter);
-            font-weight: 600;
-        }
-
-        .sidebar-title {
-            font-weight: 600;
-            color: var(--primary);
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
+        .prism-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-top: 6px;
+            padding: 0 2px 10px;
+            color: var(--muted);
+            font-size: 0.82rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
         }
 
-        /* Alert boxes */
-        .alert {
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid;
+        .prism-dots {
+            display: flex;
+            gap: 6px;
         }
 
-        .alert-info {
-            background: #eff6ff;
-            border-color: var(--accent);
-            color: #1e40af;
+        .prism-dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
         }
 
-        .alert-warning {
-            background: #fffbeb;
-            border-color: var(--warning);
-            color: #92400e;
-        }
+        .prism-dots span:nth-child(1) { background: #ff6b6b; }
+        .prism-dots span:nth-child(2) { background: #ffd166; }
+        .prism-dots span:nth-child(3) { background: #06d6a0; }
 
-        .alert-error {
-            background: #fef2f2;
-            border-color: var(--error);
-            color: #991b1b;
-        }
-
-        .alert-success {
-            background: #ecfdf5;
-            border-color: var(--success);
-            color: #065f46;
-        }
-
-        .alert strong {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--primary);
-            color: white;
-            padding: 3rem 0;
-            margin-top: 4rem;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h4 {
-            color: white;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .footer-section ul {
-            list-style: none;
-            margin: 0;
-        }
-
-        .footer-section a {
-            color: #d1d5db;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .footer-section a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 2rem;
-            text-align: center;
-            color: #9ca3af;
-        }
-
-        /* Badge */
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-right: 0.5rem;
-        }
-
-        .badge-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .badge-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .badge-warning {
-            background: var(--warning);
-            color: white;
-        }
-
-        /* API param */
-        .api-param {
-            background: var(--primary-lighter);
-            padding: 1rem;
-            border-radius: 0.375rem;
-            margin: 0.75rem 0;
-            border-left: 3px solid var(--accent);
-        }
-
-        .api-param-name {
-            font-weight: 600;
+        .endpoint {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #eef5ff;
             color: var(--primary);
-            font-family: monospace;
+            font-weight: 700;
+            font-size: 0.83rem;
+            margin-bottom: 12px;
         }
 
-        .api-param-type {
-            color: var(--accent);
-            font-family: monospace;
-            font-size: 0.9rem;
+        .endpoint strong {
+            color: #fff;
+            background: var(--primary);
+            border-radius: 999px;
+            padding: 3px 8px;
+            font-size: 0.78rem;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav ul {
-                gap: 1rem;
-                font-size: 0.85rem;
-            }
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+        }
 
-            .hero h1 {
-                font-size: 2.5rem;
-            }
+        .link-card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px;
+            background: linear-gradient(180deg, #fff, #f8fbff);
+        }
 
-            .hero p {
-                font-size: 1rem;
-            }
+        .link-card strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--heading);
+        }
 
-            .sidebar-container {
+        footer {
+            margin-top: 28px;
+            padding: 26px 30px;
+            border-radius: var(--radius);
+            background: linear-gradient(180deg, #0f2248, #0b1a35);
+            color: rgba(255,255,255,0.86);
+            box-shadow: var(--shadow);
+        }
+
+        footer a { color: #b9d4ff; }
+
+        .footer-links {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .footer-link {
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 999px;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .footer-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 1100px) {
+            .hero,
+            .layout,
+            .feature-grid,
+            .link-grid,
+            .badge-row,
+            .grid-2,
+            .summary-grid {
                 grid-template-columns: 1fr;
             }
 
-            aside {
+            .sidebar {
                 position: static;
             }
 
-            .hero-buttons {
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 720px) {
+            .topbar-inner,
+            .page,
+            .hero-card,
+            .sidebar,
+            .section-card,
+            footer {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .topbar {
+                height: auto;
+                position: sticky;
+            }
+
+            .topbar-inner {
+                min-height: var(--header-height);
+                padding-top: 14px;
+                padding-bottom: 14px;
                 flex-direction: column;
+                align-items: flex-start;
             }
 
-            .btn {
+            .header-links,
+            .footer-links {
                 width: 100%;
             }
 
-            nav {
-                flex-wrap: wrap;
+            .header-link,
+            .footer-link {
+                flex: 1 1 auto;
+                text-align: center;
             }
 
-            nav ul {
-                order: 3;
-                width: 100%;
-                margin-top: 1rem;
-                flex-wrap: wrap;
+            .stats {
+                grid-template-columns: 1fr;
             }
+        }
+
+        /* Prism.js Syntax Highlighting - Brighter colors for better visibility */
+        .token.comment,
+        .token.prolog,
+        .token.doctype,
+        .token.cdata { color: #94a3b8 !important; }
+        
+        .token.punctuation { color: #e2e8f0 !important; }
+        
+        .token.property,
+        .token.tag,
+        .token.constant,
+        .token.symbol,
+        .token.deleted { color: #7dd3fc !important; }
+        
+        .token.boolean,
+        .token.number { color: #fda4af !important; }
+        
+        .token.selector,
+        .token.attr-name,
+        .token.string,
+        .token.char,
+        .token.builtin,
+        .token.inserted { color: #86efac !important; }
+        
+        .token.operator,
+        .token.entity,
+        .token.url,
+        .language-css .token.string,
+        .style .token.string { color: #ddd6fe !important; }
+        
+        .token.atrule,
+        .token.attr-value,
+        .token.keyword { color: #bae6fd !important; }
+        
+        .token.function,
+        .token.class-name { color: #fde047 !important; }
+        
+        .token.regex,
+        .token.important,
+        .token.variable { color: #fdba74 !important; }
+        
+        /* Default text color for code without specific tokens */
+        pre[class*="language-"] {
+            color: #e2e8f0 !important;
+        }
+        
+        code[class*="language-"],
+        pre[class*="language-"] * {
+            color: inherit;
         }
     </style>
 </head>
 <body>
-    <!-- Header Navigation -->
-    <header>
-        <nav class="container">
-            <div class="logo">
-                🔔 InAppNotifications
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true"></span>
+                <div class="brand-text">
+                    <small>Android Library Docs</small>
+                    InAppNotifications
+                </div>
             </div>
-            <ul>
-                <li><a href="#quickstart">Quick Start</a></li>
-                <li><a href="#api">API Reference</a></li>
-                <li><a href="#advanced">Advanced</a></li>
-                <li><a href="#install">Installation</a></li>
-            </ul>
-        </nav>
+            <nav class="header-links" aria-label="Quick links">
+                <a class="header-link" href="#installation">Get Started</a>
+                <a class="header-link" href="#api-reference">API Reference</a>
+                <a class="header-link" href="https://github.com/NereyaHillel/InAppNotificationLibrary" target="_blank" rel="noreferrer">GitHub</a>
+            </nav>
+        </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>InAppNotifications</h1>
-            <p>Professional Android library for seamlessly displaying in-app notifications with server integration, crash reporting, and user interaction tracking. Built with Kotlin coroutines and modern Android architecture.</p>
-            <div class="hero-buttons">
-                <button class="btn btn-primary" onclick="document.getElementById('install').scrollIntoView()">Get Started</button>
-                <a href="https://github.com/NereyaHillel/InAppNotificationLibrary" class="btn btn-secondary">View on GitHub</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features">
-        <div class="container">
-            <h2>Powerful Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="icon">🎯</div>
-                    <h3>Beautiful UI</h3>
-                    <p>Customizable notification dialogs with multiple positioning options (TOP, CENTER, BOTTOM) and stunning animations.</p>
+    <div class="page">
+        <section class="hero">
+            <article class="hero-card">
+                <div class="eyebrow">Production-ready Server-Driven UI SDK</div>
+                <h1>Professional in-app notification infrastructure for Android.</h1>
+                <p class="muted">InAppNotifications is a Kotlin-based Android library that implements a robust <strong>Server-Driven UI (SDUI)</strong> architecture for in-app notifications. Your backend controls button text, placement, media, and deep links while the SDK handles rendering, routing, tracking, and reporting.</p>
+                <div class="badge-row">
+                    <div class="pill">Min SDK 24+</div>
+                    <div class="pill">Kotlin-first</div>
+                    <div class="pill">JitPack Ready</div>
+                    <div class="pill">MIT License</div>
                 </div>
-                <div class="feature-card">
-                    <div class="icon">⚡</div>
-                    <h3>Non-blocking</h3>
-                    <p>Full Kotlin Coroutines support for async operations with reactive event handling.</p>
+                <div class="summary-grid">
+                    <div class="mini-card">
+                        <strong>Backend-controlled UI</strong>
+                        Position, CTA labels, images, and deep links are delivered via JSON payloads.
+                    </div>
+                    <div class="mini-card">
+                        <strong>Minimal integration</strong>
+                        Initialize once, register the device, fetch notifications, and render with a single method call.
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <div class="icon">📊</div>
-                    <h3>Interaction Tracking</h3>
-                    <p>Automatic and manual tracking of user interactions with comprehensive analytics.</p>
+            </article>
+            <div class="stats">
+                <div class="stat">
+                    <strong>93%</strong>
+                    less boilerplate compared to traditional in-app notification implementations.
                 </div>
-                <div class="feature-card">
-                    <div class="icon">💥</div>
-                    <h3>Crash Reporting</h3>
-                    <p>Global crash handler with automatic server reporting and stack trace capture.</p>
+                <div class="stat">
+                    <strong>11</strong>
+                    core documentation sections covering setup, SDUI, APIs, backend integration, and operations.
                 </div>
-                <div class="feature-card">
-                    <div class="icon">🔄</div>
-                    <h3>Device Registration</h3>
-                    <p>Seamless device registration with the notification server with automatic ID capture.</p>
+                <div class="stat">
+                    <strong>5</strong>
+                    key network and platform technologies: Coroutines, Retrofit, Gson, OkHttp, and Glide.
                 </div>
-                <div class="feature-card">
-                    <div class="icon">📸</div>
-                    <h3>Image Support</h3>
-                    <p>Built-in Glide integration with intelligent fallback handling and smooth transitions.</p>
+                <div class="stat">
+                    <strong>3</strong>
+                    supported popup positions: TOP, CENTER, and BOTTOM.
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Main Content -->
-    <section style="padding: 3rem 0;">
-        <div class="container">
-            <div class="sidebar-container">
-                <!-- Sidebar Navigation -->
-                <aside>
-                    <div class="sidebar-title">Getting Started</div>
-                    <a href="#install" class="sidebar-link">Installation</a>
-                    <a href="#requirements" class="sidebar-link">Requirements</a>
-                    <a href="#quickstart" class="sidebar-link">Quick Start</a>
+        <div class="layout">
+            <aside class="sidebar" aria-label="Documentation table of contents">
+                <h2>Table of Contents</h2>
+                <ul class="toc">
+                    <li><a href="#key-features">Key Features</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#requirements">Requirements</a></li>
+                    <li><a href="#quick-start">Quick Start</a></li>
+                    <li><a href="#sdui">Server-Driven UI (SDUI)</a></li>
+                    <li><a href="#api-reference">API Reference</a></li>
+                    <li><a href="#advanced-usage">Advanced Usage</a></li>
+                    <li><a href="#backend-integration">Backend Integration</a></li>
+                    <li><a href="#best-practices">Best Practices</a></li>
+                    <li><a href="#troubleshooting">Troubleshooting</a></li>
+                    <li><a href="#license">License</a></li>
+                    <li><a href="#links-resources">Links &amp; Resources</a></li>
+                </ul>
+            </aside>
 
-                    <div class="sidebar-title">Documentation</div>
-                    <a href="#api" class="sidebar-link">API Reference</a>
-                    <a href="#models" class="sidebar-link">Data Models</a>
-                    <a href="#advanced" class="sidebar-link">Advanced Usage</a>
-                    <a href="#permissions" class="sidebar-link">Permissions</a>
+            <main class="content">
+                <section id="key-features" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-quickstart" aria-hidden="true"></span>
+                        <h2>Key Features</h2>
+                    </div>
+                    <p class="muted">Core capabilities from the library README, presented as a quick product overview.</p>
+                    <div class="feature-grid">
+                        <article class="feature-card">
+                            <div class="icon-chip">Server-Driven UI</div>
+                            <h3>Backend controls the experience</h3>
+                            <p>Drive layouts, button labels, positions, and deep links entirely from backend payloads.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="icon-chip">Automatic Routing</div>
+                            <h3>Deep links handled automatically</h3>
+                            <p>Includes URL normalization and Android Intent handling for user journeys.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="icon-chip">Beautiful UI</div>
+                            <h3>Flexible popup presentation</h3>
+                            <p>Show notifications at the top, center, or bottom with optional images and CTAs.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="icon-chip">Async by default</div>
+                            <h3>Non-blocking coroutines support</h3>
+                            <p>Use modern Kotlin Coroutines for registration, retrieval, and interaction tracking.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="icon-chip">Analytics</div>
+                            <h3>Interaction tracking built in</h3>
+                            <p>Track clicked, dismissed, viewed, and other actions with minimal integration code.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="icon-chip">Reliability</div>
+                            <h3>Automatic crash reporting</h3>
+                            <p>Unhandled exceptions can be captured and reported back to the server automatically.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="icon-chip">Device Registration</div>
+                            <h3>Server-ready client identity</h3>
+                            <p>Register device model and device ID to support segmentation and campaign delivery.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="icon-chip">Media support</div>
+                            <h3>Glide-powered image loading</h3>
+                            <p>Load remote images gracefully and provide fallbacks for degraded network conditions.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="icon-chip">Type-safe API</div>
+                            <h3>Modern networking stack</h3>
+                            <p>Retrofit and Gson provide predictable request/response handling and cleaner models.</p>
+                        </article>
+                    </div>
+                </section>
 
-                    <div class="sidebar-title">Guides</div>
-                    <a href="#crash" class="sidebar-link">Crash Reporting</a>
-                    <a href="#error-handling" class="sidebar-link">Error Handling</a>
-                    <a href="#troubleshooting" class="sidebar-link">Troubleshooting</a>
-
-                    <div class="sidebar-title">Resources</div>
-                    <a href="#changelog" class="sidebar-link">Changelog</a>
-                    <a href="#support" class="sidebar-link">Support</a>
-                </aside>
-
-                <!-- Main Content -->
-                <main>
-                    <!-- Installation -->
-                    <section class="content-section" id="install">
+                <section id="installation" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-install" aria-hidden="true"></span>
                         <h2>Installation</h2>
+                    </div>
+                    <p class="muted">Set up JitPack, add the dependency, and sync the project.</p>
+
+                    <div class="step">
                         <h3>Step 1: Add JitPack Repository</h3>
-                        <p>In your <strong>settings.gradle.kts</strong> (root level), add the JitPack repository:</p>
-                        <pre><code>dependencyResolutionManagement {
+                        <div class="file-label">File: settings.gradle.kts (root level)</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin DSL</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
+        maven { url = uri(&quot;https://jitpack.io&quot;) }
     }
 }</code></pre>
+                    </div>
 
+                    <div class="step">
                         <h3>Step 2: Add Dependency</h3>
-                        <p>In your app-level <strong>build.gradle.kts</strong>:</p>
-                        <pre><code>dependencies {
-    implementation("com.github.NereyaHillel:InAppNotificationLibrary:1.1.0")
+                        <div class="file-label">File: build.gradle.kts (app-level)</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin DSL</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">dependencies {
+    implementation(&quot;com.github.NereyaHillel:InAppNotificationLibrary:2.0.0&quot;)
 }</code></pre>
+                    </div>
 
-                        <h3>Step 3: Sync Gradle</h3>
-                        <p>Click "Sync Now" in Android Studio.</p>
-                    </section>
+                    <div class="step">
+                        <h3>Step 3: Sync Project</h3>
+                        <p>Click <strong>Sync Now</strong> in Android Studio.</p>
+                    </div>
+                </section>
 
-                    <!-- Requirements -->
-                    <section class="content-section" id="requirements">
+                <section id="requirements" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-requirements" aria-hidden="true"></span>
                         <h2>Requirements</h2>
+                    </div>
+                    <div class="table-wrap">
                         <table>
-                            <tr>
-                                <th>Requirement</th>
-                                <th>Version</th>
-                            </tr>
-                            <tr>
-                                <td><strong>Min SDK</strong></td>
-                                <td>24 (Android 7.0)</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Target SDK</strong></td>
-                                <td>34 (Android 14)</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Compile SDK</strong></td>
-                                <td>34</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Java Version</strong></td>
-                                <td>17+</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Kotlin Version</strong></td>
-                                <td>1.9.0+</td>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th>Requirement</th>
+                                    <th>Version</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Min SDK</strong></td><td>24 (Android 7.0)</td></tr>
+                                <tr><td><strong>Target SDK</strong></td><td>34 (Android 14)</td></tr>
+                                <tr><td><strong>Compile SDK</strong></td><td>34</td></tr>
+                                <tr><td><strong>Java Version</strong></td><td>17+</td></tr>
+                                <tr><td><strong>Kotlin Version</strong></td><td>1.9.0+</td></tr>
+                            </tbody>
                         </table>
-
-                        <p>Ensure your app's <strong>build.gradle.kts</strong> has Java 17:</p>
-                        <pre><code>compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+                    </div>
+                    <div class="file-label">File: build.gradle.kts (app-level)</div>
+                    <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin DSL</span></div>
+                    <pre class="language-kotlin"><code class="language-kotlin">android {
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = &quot;17&quot;
+    }
 }</code></pre>
-                    </section>
+                </section>
 
-                    <!-- Quick Start -->
-                    <section class="content-section" id="quickstart">
+                <section id="quick-start" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-quickstart" aria-hidden="true"></span>
                         <h2>Quick Start</h2>
+                    </div>
+                    <p class="muted">Initialize the SDK, register the device, then fetch and display notifications.</p>
 
+                    <div class="step">
                         <h3>1. Initialize the SDK</h3>
-                        <p>Initialize in your <strong>Application</strong> class:</p>
-                        <pre><code>import com.example.inappnotifications.InAppNotifier
+                        <div class="file-label">File: MyApplication.kt (Application class)</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">import android.app.Application
+import com.example.inappnotifications.InAppNotifier
 
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        InAppNotifier.init(this, "user_123")
+
+        // Initialize with user ID
+        InAppNotifier.init(this, &quot;user_123&quot;)
     }
 }</code></pre>
+                        <div class="note"><strong>Important:</strong> Register your Application class in <code>AndroidManifest.xml</code>.</div>
+                        <div class="file-label">File: AndroidManifest.xml</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>XML</span></div>
+                        <pre class="language-markup"><code class="language-markup">&lt;application
+    android:name=&quot;.MyApplication&quot;
+    ...&gt;
+&lt;/application&gt;</code></pre>
+                    </div>
 
-                        <div class="alert alert-info">
-                            <strong>Important</strong>
-                            <p>Must be called before using other SDK functionality.</p>
-                        </div>
-
+                    <div class="step">
                         <h3>2. Register Device</h3>
-                        <pre><code>lifecycleScope.launch {
-    val success = InAppNotifier.registerDevice()
-    if (success) Log.d("Notifications", "Device registered")
-}</code></pre>
+                        <div class="file-label">File: MainActivity.kt (Activity or Fragment)</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">import androidx.lifecycle.lifecycleScope
+import com.example.inappnotifications.InAppNotifier
+import kotlinx.coroutines.launch
 
-                        <h3>3. Add Permissions</h3>
-                        <p>The following permissions are automatically declared in the library manifest:</p>
-                        <pre><code>&lt;uses-permission android:name="android.permission.INTERNET" /&gt;
-&lt;uses-permission android:name="android.permission.READ_PHONE_STATE" /&gt;
-&lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;</code></pre>
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-                        <h3>4. Fetch and Display Notifications</h3>
-                        <pre><code>import com.example.inappnotifications.NotificationPosition
-
-lifecycleScope.launch {
-    val notifications = InAppNotifier.getNotifications()
-
-    notifications?.forEach { notification ->
-        InAppNotifier.showNotificationPopup(
-            context = this@MainActivity,
-            notification = notification,
-            position = NotificationPosition.CENTER,
-            positiveButtonText = "Accept",
-            onPositiveClick = {
-                Log.d("Notifications", "User accepted")
+        // Register device with the server
+        lifecycleScope.launch {
+            val success = InAppNotifier.registerDevice()
+            if (success) {
+                Log.d(&quot;App&quot;, &quot;Device registered successfully&quot;)
+                fetchNotifications()
             }
-        )
-    }
-}</code></pre>
-                    </section>
-
-                    <!-- API Reference -->
-                    <section class="content-section" id="api">
-                        <h2>API Reference</h2>
-
-                        <h3>InAppNotifier Singleton</h3>
-                        <p>The main object for managing in-app notifications.</p>
-
-                        <h4>init(context: Context, userId: String)</h4>
-                        <p>Initializes the SDK with user identification and device information.</p>
-                        <div class="api-param">
-                            <div class="api-param-name">context</div>
-                            <div>Android application context</div>
-                        </div>
-                        <div class="api-param">
-                            <div class="api-param-name">userId</div>
-                            <div>Unique user identifier</div>
-                        </div>
-
-                        <h4>registerDevice(): Boolean</h4>
-                        <p>Registers the current device with the notification server.</p>
-                        <div class="api-param">
-                            <div class="api-param-type">Returns:</div>
-                            <div><span class="badge badge-success">Boolean</span> – true if successful</div>
-                        </div>
-
-                        <h4>getNotifications(): List&lt;InAppNotification&gt;?</h4>
-                        <p>Fetches the list of pending notifications for the current user.</p>
-                        <div class="api-param">
-                            <div class="api-param-type">Returns:</div>
-                            <div>List of InAppNotification objects or null on error</div>
-                        </div>
-
-                        <h4>trackInteraction(notificationId: String, action: String): Boolean</h4>
-                        <p>Records user interaction with a notification.</p>
-                        <div class="api-param">
-                            <div class="api-param-name">notificationId</div>
-                            <div>ID of the notification</div>
-                        </div>
-                        <div class="api-param">
-                            <div class="api-param-name">action</div>
-                            <div>Action type: "clicked", "dismissed", etc.</div>
-                        </div>
-
-                        <h4>showNotificationPopup(...): Unit</h4>
-                        <p>Displays an in-app notification dialog with customizable buttons and positioning.</p>
-                        <ul>
-                            <li><strong>context</strong> – Android application context</li>
-                            <li><strong>notification</strong> – The InAppNotification to display</li>
-                            <li><strong>position</strong> – Position on screen: TOP, CENTER, BOTTOM (default: CENTER)</li>
-                            <li><strong>imageUrl</strong> – Optional image URL to display</li>
-                            <li><strong>fallbackImageRes</strong> – Drawable resource ID for failure</li>
-                            <li><strong>positiveButtonText</strong> – Optional positive button text</li>
-                            <li><strong>onPositiveClick</strong> – Optional callback for positive button</li>
-                            <li><strong>negativeButtonText</strong> – Optional negative button text</li>
-                            <li><strong>onNegativeClick</strong> – Optional callback for negative button</li>
-                            <li><strong>neutralButtonText</strong> – Optional neutral button text</li>
-                            <li><strong>onNeutralClick</strong> – Optional callback for neutral button</li>
-                            <li><strong>onDismiss</strong> – Optional callback when dialog is dismissed</li>
-                        </ul>
-
-                        <h4>reportCrash(crashDetails: String): Boolean</h4>
-                        <p>Reports a crash to the notification server. Called automatically for unhandled exceptions.</p>
-                        <div class="api-param">
-                            <div class="api-param-name">crashDetails</div>
-                            <div>Stack trace and crash details</div>
-                        </div>
-                    </section>
-
-                    <!-- Data Models -->
-                    <section class="content-section" id="models">
-                        <h2>Data Models</h2>
-
-                        <h3>InAppNotification</h3>
-                        <p>Represents a notification from the server.</p>
-                        <pre><code>data class InAppNotification(
-    val _id: String,              // Notification unique ID
-    val campaign_id: String,      // Campaign identifier
-    val message: String,          // Message content
-    val status: String,           // Status: "unread", "read", etc.
-    val title: String             // Notification title
-)</code></pre>
-
-                        <h3>RegisterDeviceRequest</h3>
-                        <p>Device registration request sent to the server.</p>
-                        <pre><code>data class RegisterDeviceRequest(
-    val device_model: String,     // Device model (e.g., "Pixel 6")
-    val device_id: String,        // Unique device ID
-    val user_id: String           // Associated user ID
-)</code></pre>
-
-                        <h3>CrashReportRequest</h3>
-                        <p>Crash report sent to the server when exceptions occur.</p>
-                        <pre><code>data class CrashReportRequest(
-    val user_id: String,          // User experiencing crash
-    val crash_details: String     // Stack trace details
-)</code></pre>
-                    </section>
-
-                    <!-- Advanced Usage -->
-                    <section class="content-section" id="advanced">
-                        <h2>Advanced Usage</h2>
-
-                        <h3>Custom Dialog Positioning</h3>
-                        <p>Display notifications at different screen positions:</p>
-                        <pre><code>// Top position
-InAppNotifier.showNotificationPopup(
-    context = context,
-    notification = notification,
-    position = NotificationPosition.TOP
-)
-
-// Center (default)
-InAppNotifier.showNotificationPopup(
-    context = context,
-    notification = notification,
-    position = NotificationPosition.CENTER
-)
-
-// Bottom position
-InAppNotifier.showNotificationPopup(
-    context = context,
-    notification = notification,
-    position = NotificationPosition.BOTTOM
-)</code></pre>
-
-                        <h3>Complete Example</h3>
-                        <pre><code>lifecycleScope.launch {
-    val notifications = InAppNotifier.getNotifications() ?: return@launch
-
-    notifications.forEach { notification ->
-        InAppNotifier.showNotificationPopup(
-            context = this@MainActivity,
-            notification = notification,
-            position = NotificationPosition.CENTER,
-            positiveButtonText = "Learn More",
-            onPositiveClick = {
-                startActivity(Intent(this@MainActivity, DetailsActivity::class.java))
-            },
-            negativeButtonText = "Dismiss",
-            onNegativeClick = {
-                Log.d("Notifications", "Dismissed")
-            },
-            onDismiss = {
-                Log.d("Notifications", "Dialog closed")
-            }
-        )
-    }
-}</code></pre>
-                    </section>
-
-                    <!-- Permissions -->
-                    <section class="content-section" id="permissions">
-                        <h2>Permissions</h2>
-                        <p>The library requires the following permissions (automatically declared in AndroidManifest.xml):</p>
-                        <pre><code>&lt;!-- Required for API communication --&gt;
-&lt;uses-permission android:name="android.permission.INTERNET" /&gt;
-
-&lt;!-- Required for device information retrieval --&gt;
-&lt;uses-permission android:name="android.permission.READ_PHONE_STATE" /&gt;
-
-&lt;!-- Optional: For network state detection --&gt;
-&lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;</code></pre>
-                    </section>
-
-                    <!-- Crash Reporting -->
-                    <section class="content-section" id="crash">
-                        <h2>Crash Reporting</h2>
-                        <p>The library automatically sets up a global crash handler. When an unhandled exception occurs, it will:</p>
-                        <ol>
-                            <li>Capture the crash details and stack trace</li>
-                            <li>Send the crash report to the server</li>
-                            <li>Delegate to the default exception handler</li>
-                        </ol>
-
-                        <div class="alert alert-info">
-                            <strong>No Additional Setup Required</strong>
-                            <p>Crash reporting works automatically after SDK initialization.</p>
-                        </div>
-
-                        <h3>Manual Crash Reporting</h3>
-                        <p>You can also manually report crashes:</p>
-                        <pre><code>lifecycleScope.launch {
-    InAppNotifier.reportCrash("Custom crash details")
-}</code></pre>
-                    </section>
-
-                    <!-- Error Handling -->
-                    <section class="content-section" id="error-handling">
-                        <h2>Error Handling</h2>
-                        <p>All API calls include built-in error handling with logging:</p>
-                        <pre><code>lifecycleScope.launch {
-    try {
-        val success = InAppNotifier.registerDevice()
-        if (!success) {
-            Log.d("Notifications", "Registration failed")
         }
-    } catch (e: Exception) {
-        Log.e("Notifications", "Exception during registration", e)
     }
 }</code></pre>
+                    </div>
 
-                        <h3>Debugging with Logcat</h3>
-                        <p>Check Android Studio's Logcat with filter to view detailed diagnostic information:</p>
-                        <pre><code>adb logcat | grep "InAppNotifier"</code></pre>
+                    <div class="step">
+                        <h3>3. Fetch and Display Notifications (SDUI)</h3>
+                        <div class="file-label">File: MainActivity.kt (Activity or Fragment)</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">private fun fetchNotifications() {
+    lifecycleScope.launch {
+        // Fetch notifications from server
+        val notifications = InAppNotifier.getNotifications()
 
-                        <h3>Log Levels</h3>
-                        <ul>
-                            <li><span class="badge badge-primary">DEBUG</span> – General information and successful operations</li>
-                            <li><span class="badge badge-warning">WARN</span> – Non-critical issues (e.g., not initialized)</li>
-                            <li><span class="badge badge-warning">ERROR</span> – Critical errors with exceptions</li>
-                        </ul>
-                    </section>
+        if (notifications.isNullOrEmpty()) {
+            Log.d(&quot;App&quot;, &quot;No pending notifications&quot;)
+            return@launch
+        }
 
-                    <!-- Troubleshooting -->
-                    <section class="content-section" id="troubleshooting">
-                        <h2>Troubleshooting</h2>
-
-                        <h3>"SDK not initialized" warning</h3>
-                        <p>Call <code>InAppNotifier.init()</code> before using APIs in your Application class onCreate.</p>
-
-                        <h3>Images not loading</h3>
-                        <p>Check that the URL is valid and provide a fallback drawable resource ID. The library uses Glide with intelligent fallback handling.</p>
-
-                        <h3>Dialog not showing</h3>
-                        <p>Ensure notification status is not "read". Only unread notifications are displayed.</p>
-
-                        <h3>Crashes not reported</h3>
-                        <p>Crashes report automatically after initialization. Check Logcat for details with tag filter: <code>InAppNotifier</code></p>
-
-                        <h3>For additional debugging:</h3>
-                        <pre><code>adb logcat | grep "InAppNotifier"</code></pre>
-                    </section>
-
-                    <!-- Changelog -->
-                    <section class="content-section" id="changelog">
-                        <h2>Changelog</h2>
-
-                        <h3>Version 1.1.0</h3>
-                        <ul>
-                            <li>Enhanced crash reporting with detailed stack traces</li>
-                            <li>Improved device registration flow</li>
-                            <li>Added support for multiple button configurations</li>
-                            <li>Better error handling and logging</li>
-                        </ul>
-
-                        <h3>Version 1.0.0</h3>
-                        <ul>
-                            <li>Initial release</li>
-                            <li>Basic notification display</li>
-                            <li>Device registration</li>
-                            <li>Interaction tracking</li>
-                            <li>Crash reporting</li>
-                            <li>Multi-position dialog support</li>
-                        </ul>
-                    </section>
-
-                    <!-- Support -->
-                    <section class="content-section" id="support">
-                        <h2>Support & Resources</h2>
-
-                        <h3>Documentation</h3>
-                        <ul>
-                            <li><a href="https://github.com/NereyaHillel/InAppNotificationLibrary" style="color: var(--accent); font-weight: 600;">GitHub Repository</a></li>
-                            <li><a href="https://jitpack.io/#NereyaHillel/InAppNotificationLibrary" style="color: var(--accent); font-weight: 600;">JitPack Package</a></li>
-                        </ul>
-
-                        <h3>Getting Help</h3>
-                        <p>For issues, questions, or suggestions:</p>
-                        <ul>
-                            <li><strong>Check the documentation</strong> above for common issues</li>
-                            <li><strong>Review code samples</strong> in Quick Start and Advanced sections</li>
-                            <li><strong>Open an issue</strong> on the GitHub repository</li>
-                            <li><strong>Check Logcat</strong> for error messages with tag filter: InAppNotifier</li>
-                        </ul>
-
-                        <h3>Dependencies</h3>
-                        <ul>
-                            <li>Retrofit 2.9.0 – HTTP client</li>
-                            <li>Gson 2.10.1 – JSON serialization</li>
-                            <li>OkHttp 4.11.0 – Network layer</li>
-                            <li>Glide 5.0.7 – Image loading</li>
-                            <li>Kotlin Coroutines 1.7.3 – Async operations</li>
-                            <li>AndroidX AppCompat 1.6.1 – Android support</li>
-                        </ul>
-
-                        <h3>License</h3>
-                        <p>Licensed under the <strong>MIT License</strong>. See the <a href="https://github.com/NereyaHillel/InAppNotificationLibrary/blob/main/LICENSE" style="color: var(--accent); font-weight: 600;">LICENSE file</a> for details.</p>
-                    </section>
-                </main>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>📚 Getting Started</h4>
-                    <ul>
-                        <li><a href="#install">Installation</a></li>
-                        <li><a href="#quickstart">Quick Start</a></li>
-                        <li><a href="#requirements">Requirements</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>🔗 API Documentation</h4>
-                    <ul>
-                        <li><a href="#api">API Reference</a></li>
-                        <li><a href="#models">Data Models</a></li>
-                        <li><a href="#advanced">Advanced Usage</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>📖 Guides</h4>
-                    <ul>
-                        <li><a href="#crash">Crash Reporting</a></li>
-                        <li><a href="#error-handling">Error Handling</a></li>
-                        <li><a href="#troubleshooting">Troubleshooting</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>🔗 Community</h4>
-                    <ul>
-                        <li><a href="https://github.com/NereyaHillel/InAppNotificationLibrary">GitHub</a></li>
-                        <li><a href="https://jitpack.io/#NereyaHillel/InAppNotificationLibrary">JitPack</a></li>
-                        <li><a href="https://github.com/NereyaHillel/InAppNotificationLibrary/issues">Issues</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 InAppNotifications. Built with ❤️ for Android developers.</p>
-                <p style="font-size: 0.9rem; margin-top: 0.5rem;">MIT License • <a href="https://github.com/NereyaHillel/InAppNotificationLibrary/blob/main/LICENSE" style="color: #9ca3af;">View License</a></p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Smooth navigation highlighting
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (href !== '#' && document.querySelector(href)) {
-                    e.preventDefault();
-                    document.querySelector(href).scrollIntoView({ behavior: 'smooth' });
-
-                    // Update sidebar active state
-                    document.querySelectorAll('.sidebar-link').forEach(link => {
-                        link.classList.remove('active');
-                    });
-                    document.querySelector(`a[href="${href}"].sidebar-link`)?.classList.add('active');
+        // Display notifications - SDK handles everything from JSON payload
+        notifications.forEach { notification -&gt;
+            InAppNotifier.showNotificationPopup(
+                context = this@MainActivity,
+                notification = notification,
+                onDismiss = {
+                    Log.d(&quot;App&quot;, &quot;Notification dismissed&quot;)
                 }
-            });
-        });
+            )
+        }
+    }
+}</code></pre>
+                    </div>
 
-        // Set initial active link based on scroll position
-        window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('[id]');
-            const scrollPosition = window.scrollY + 100;
+                    <div class="tip"><strong>That’s it.</strong> The backend now controls all UI aspects through JSON.</div>
+                </section>
 
-            sections.forEach(section => {
-                if (section.offsetTop <= scrollPosition) {
-                    document.querySelectorAll('.sidebar-link').forEach(link => {
-                        link.classList.remove('active');
-                    });
-                    const activeLink = document.querySelector(`a[href="#${section.id}"].sidebar-link`);
-                    if (activeLink) {
-                        activeLink.classList.add('active');
+                <section id="sdui" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-sdui" aria-hidden="true"></span>
+                        <h2>Server-Driven UI (SDUI)</h2>
+                    </div>
+
+                    <h3>What is SDUI?</h3>
+                    <p>The backend JSON payload dictates:</p>
+                    <ul class="check-list">
+                        <li><strong>Dialog Position</strong> (<code>position</code>: &quot;TOP&quot; | &quot;CENTER&quot; | &quot;BOTTOM&quot;)</li>
+                        <li><strong>Button Text</strong> (<code>btn_positive</code>, <code>btn_negative</code>, <code>btn_neutral</code>)</li>
+                        <li><strong>Images</strong> (<code>image_url</code>)</li>
+                        <li><strong>Deep Links</strong> (<code>link</code> - opened automatically on positive button click)</li>
+                    </ul>
+
+                    <h3>Backend JSON Structure</h3>
+                    <div class="file-label">File: Backend notification response payload</div>
+                    <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>JSON</span></div>
+                    <pre class="language-json"><code class="language-json">{
+  &quot;message&quot;: &quot;Unread notifications retrieved successfully&quot;,
+  &quot;notifications&quot;: [
+    {
+      &quot;_id&quot;: &quot;notif_123&quot;,
+      &quot;campaign_id&quot;: &quot;camp_456&quot;,
+      &quot;title&quot;: &quot;Special Offer!&quot;,
+      &quot;message&quot;: &quot;Get 50% off your next purchase&quot;,
+      &quot;status&quot;: &quot;delivered&quot;,
+
+      // SDUI Fields (all optional)
+      &quot;position&quot;: &quot;CENTER&quot;,
+      &quot;image_url&quot;: &quot;https://example.com/offer.jpg&quot;,
+      &quot;link&quot;: &quot;https://example.com/shop/special-offer&quot;,
+      &quot;btn_positive&quot;: &quot;Shop Now&quot;,
+      &quot;btn_negative&quot;: &quot;Maybe Later&quot;,
+      &quot;btn_neutral&quot;: null
+    }
+  ]
+}</code></pre>
+
+                    <h3>SDUI Benefits</h3>
+                    <div class="grid-2">
+                        <div class="mini-card"><strong>For Developers</strong>93% less code, no UI configuration needed.</div>
+                        <div class="mini-card"><strong>For Product Teams</strong>Change UI without app deployment.</div>
+                        <div class="mini-card"><strong>For Marketing</strong>Real-time A/B testing and campaign updates.</div>
+                        <div class="mini-card"><strong>For Engineering</strong>Professional architecture with minimal technical debt.</div>
+                    </div>
+                </section>
+
+                <section id="api-reference" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-api" aria-hidden="true"></span>
+                        <h2>API Reference</h2>
+                    </div>
+                    <p class="muted">Primary methods exposed by <code>InAppNotifier</code>.</p>
+
+                    <h3>InAppNotifier Methods</h3>
+
+                    <div class="step">
+                        <h4><code>init(context: Context, userId: String)</code></h4>
+                        <p>Initializes the SDK. <strong>Must be called first</strong> (typically in Application class).</p>
+                        <p><strong>Parameters:</strong></p>
+                        <ul class="text-list">
+                            <li><code>context</code>: Android application context</li>
+                            <li><code>userId</code>: Unique identifier for the current user</li>
+                        </ul>
+                        <p><strong>Example:</strong> See <a href="#quick-start">Quick Start</a>.</p>
+                    </div>
+
+                    <div class="step">
+                        <h4><code>registerDevice(): Boolean</code></h4>
+                        <p>Registers the device with the notification server. Sends device model and ID.</p>
+                        <p><strong>Returns:</strong> <code>true</code> if registration successful, <code>false</code> otherwise.</p>
+                        <div class="file-label">File: Activity/Fragment with coroutine scope</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">lifecycleScope.launch {
+    val success = InAppNotifier.registerDevice()
+    if (!success) {
+        Log.w(&quot;App&quot;, &quot;Device registration failed&quot;)
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h4><code>getNotifications(): List&lt;InAppNotification&gt;?</code></h4>
+                        <p>Fetches unread in-app notifications for the current user.</p>
+                        <p><strong>Returns:</strong> List of notifications, or <code>null</code> if failed.</p>
+                        <div class="file-label">File: Activity/Fragment with coroutine scope</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">lifecycleScope.launch {
+    val notifications = InAppNotifier.getNotifications()
+    notifications?.forEach { notification -&gt;
+        // Process notification
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h4><code>showNotificationPopup(...)</code></h4>
+                        <p>Displays notification dialog using Server-Driven UI pattern. All UI configurations are read from the notification object.</p>
+                        <p><strong>Parameters:</strong></p>
+                        <ul class="text-list">
+                            <li><code>context: Context</code> - Android context (Activity/Fragment)</li>
+                            <li><code>notification: InAppNotification</code> - Notification object with SDUI fields</li>
+                            <li><code>fallbackImageRes: Int</code> - Fallback drawable (default: <code>R.drawable.ic_notification</code>)</li>
+                            <li><code>onDismiss: (() -&gt; Unit)?</code> - Optional callback when dialog dismissed</li>
+                        </ul>
+                        <div class="file-label">File: Activity/Fragment</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">InAppNotifier.showNotificationPopup(
+    context = this,
+    notification = notification,
+    fallbackImageRes = R.drawable.my_custom_fallback,
+    onDismiss = {
+        // Handle dismissal
+    }
+)</code></pre>
+                        <div class="note">Position, buttons, images, and links are controlled by the backend JSON.</div>
+                    </div>
+
+                    <div class="step">
+                        <h4><code>trackInteraction(notificationId: String, action: String): Boolean</code></h4>
+                        <p>Manually tracks user interaction with a notification.</p>
+                        <p><strong>Parameters:</strong></p>
+                        <ul class="text-list">
+                            <li><code>notificationId</code>: The notification's unique ID</li>
+                            <li><code>action</code>: Action type (e.g., <code>clicked</code>, <code>dismissed</code>, <code>viewed</code>)</li>
+                        </ul>
+                        <p><strong>Returns:</strong> <code>true</code> if tracking successful.</p>
+                        <div class="file-label">File: Activity/Fragment with coroutine scope</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">lifecycleScope.launch {
+    val tracked = InAppNotifier.trackInteraction(notification._id, &quot;viewed&quot;)
+}</code></pre>
+                        <div class="note">Positive button clicks are tracked automatically.</div>
+                    </div>
+
+                    <div class="step">
+                        <h4><code>reportCrash(crashDetails: String): Boolean</code></h4>
+                        <p>Reports crash details to the server. <strong>Called automatically</strong> for unhandled exceptions.</p>
+                        <p><strong>Parameters:</strong></p>
+                        <ul class="text-list">
+                            <li><code>crashDetails</code>: Crash stack trace or details</li>
+                        </ul>
+                        <p><strong>Returns:</strong> <code>true</code> if report sent successfully.</p>
+                        <div class="note">Global crash handler is set up automatically during <code>init()</code>.</div>
+                    </div>
+                </section>
+
+                <section id="advanced-usage" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-advanced" aria-hidden="true"></span>
+                        <h2>Advanced Usage</h2>
+                    </div>
+
+                    <div class="step">
+                        <h3>Sequential Notification Display</h3>
+                        <div class="file-label">File: MainActivity.kt</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">private fun displayNotificationsSequentially() {
+    lifecycleScope.launch {
+        val notifications = InAppNotifier.getNotifications() ?: return@launch
+
+        var currentIndex = 0
+
+        fun showNext() {
+            if (currentIndex &lt; notifications.size) {
+                val notification = notifications[currentIndex]
+                currentIndex++
+
+                InAppNotifier.showNotificationPopup(
+                    context = this@MainActivity,
+                    notification = notification,
+                    onDismiss = {
+                        // Show next notification when current one is dismissed
+                        showNext()
                     }
-                }
-            });
-        });
-    </script>
+                )
+            }
+        }
+
+        showNext()
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h3>Custom Fallback Image</h3>
+                        <div class="file-label">File: Activity/Fragment</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">InAppNotifier.showNotificationPopup(
+    context = this,
+    notification = notification,
+    fallbackImageRes = R.drawable.custom_notification_icon
+)</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h3>Manual Interaction Tracking</h3>
+                        <div class="file-label">File: Activity/Fragment</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">lifecycleScope.launch {
+    // Track custom events
+    InAppNotifier.trackInteraction(notification._id, &quot;viewed&quot;)
+    InAppNotifier.trackInteraction(notification._id, &quot;shared&quot;)
+}</code></pre>
+                    </div>
+                </section>
+
+                <section id="backend-integration" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-backend" aria-hidden="true"></span>
+                        <h2>Backend Integration</h2>
+                    </div>
+
+                    <h3>Required API Endpoints</h3>
+                    <p>Your backend must implement these endpoints.</p>
+
+                    <div class="step">
+                        <h4>1. Register Device</h4>
+                        <div class="endpoint"><strong>POST</strong><span>/api/v1/sdk/device/register</span></div>
+                        <div class="file-label">File: Backend API endpoint implementation</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Request</span></div>
+                        <pre class="language-json"><code class="language-json">POST /api/v1/sdk/device/register
+Content-Type: application/json
+
+{
+  &quot;device_model&quot;: &quot;Pixel 6&quot;,
+  &quot;device_id&quot;: &quot;android_device_id&quot;,
+  &quot;user_id&quot;: &quot;user_123&quot;
+}</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h4>2. Get Notifications</h4>
+                        <div class="endpoint"><strong>GET</strong><span>/api/v1/sdk/notifications?user_id=user_123</span></div>
+                        <div class="file-label">File: Backend API endpoint implementation</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Response</span></div>
+                        <pre class="language-json"><code class="language-json">GET /api/v1/sdk/notifications?user_id=user_123
+
+Response:
+{
+  &quot;message&quot;: &quot;Success&quot;,
+  &quot;notifications&quot;: [ /* SDUI notification objects */ ]
+}</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h4>3. Track Interaction</h4>
+                        <div class="endpoint"><strong>POST</strong><span>/api/v1/sdk/notifications/{id}/interact?action=clicked</span></div>
+                        <div class="file-label">File: Backend API endpoint implementation</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Endpoint</span></div>
+                        <pre class="language-bash"><code class="language-bash">POST /api/v1/sdk/notifications/{id}/interact?action=clicked</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h4>4. Report Crash</h4>
+                        <div class="endpoint"><strong>POST</strong><span>/api/v1/sdk/crash-report</span></div>
+                        <div class="file-label">File: Backend API endpoint implementation</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Request</span></div>
+                        <pre class="language-json"><code class="language-json">POST /api/v1/sdk/crash-report
+Content-Type: application/json
+
+{
+  &quot;user_id&quot;: &quot;user_123&quot;,
+  &quot;crash_details&quot;: &quot;Stack trace...&quot;
+}</code></pre>
+                    </div>
+
+                    <h3>Campaign Database Structure</h3>
+                    <p>Your campaigns collection should include SDUI fields.</p>
+                    <div class="file-label">File: Campaign document schema / database record</div>
+                    <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>JSON</span></div>
+                    <pre class="language-json"><code class="language-json">{
+  &quot;_id&quot;: &quot;ObjectId(...)&quot;,
+  &quot;name&quot;: &quot;Summer Sale&quot;,
+  &quot;message&quot;: &quot;Get 50% off all items!&quot;,
+  &quot;status&quot;: &quot;active&quot;,
+  &quot;position&quot;: &quot;BOTTOM&quot;,
+  &quot;image_url&quot;: &quot;https://cdn.example.com/summer-sale.jpg&quot;,
+  &quot;link&quot;: &quot;myapp://shop/summer-sale&quot;,
+  &quot;btn_positive&quot;: &quot;Shop Now&quot;,
+  &quot;btn_negative&quot;: &quot;Remind Me Later&quot;,
+  &quot;btn_neutral&quot;: null
+}</code></pre>
+                </section>
+
+                <section id="best-practices" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-best" aria-hidden="true"></span>
+                        <h2>Best Practices</h2>
+                    </div>
+
+                    <div class="step">
+                        <h3>1. Initialize in Application Class</h3>
+                        <div class="file-label">File: MyApplication.kt</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        InAppNotifier.init(this, getCurrentUserId())
+    }
+
+    private fun getCurrentUserId(): String {
+        // Fetch from SharedPreferences, Firebase Auth, etc.
+        return &quot;user_123&quot;
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h3>2. Use Lifecycle-Aware Coroutines</h3>
+                        <div class="file-label">File: Activity/Fragment</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">// ✅ Good - respects lifecycle
+lifecycleScope.launch {
+    InAppNotifier.registerDevice()
+}
+
+// ❌ Bad - may leak
+GlobalScope.launch {
+    InAppNotifier.registerDevice()
+}</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h3>3. Handle Null Responses</h3>
+                        <div class="file-label">File: Activity/Fragment notification flow</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">val notifications = InAppNotifier.getNotifications()
+if (notifications.isNullOrEmpty()) {
+    // Handle empty state
+    showEmptyNotificationsView()
+    return@launch
+}</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h3>4. Check Return Values</h3>
+                        <div class="file-label">File: Activity/Fragment registration flow</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">lifecycleScope.launch {
+    val registered = InAppNotifier.registerDevice()
+    if (!registered) {
+        Log.w(&quot;App&quot;, &quot;Registration failed - check network/server&quot;)
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h3>5. Test with Different Payloads</h3>
+                        <ul class="check-list">
+                            <li>No buttons (<code>btn_positive</code>, <code>btn_negative</code>, <code>btn_neutral</code> all null)</li>
+                            <li>No image (<code>image_url</code> null)</li>
+                            <li>Different positions (<code>TOP</code>, <code>CENTER</code>, <code>BOTTOM</code>)</li>
+                            <li>Valid and invalid links</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="troubleshooting" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-troubleshooting" aria-hidden="true"></span>
+                        <h2>Troubleshooting</h2>
+                    </div>
+
+                    <div class="step">
+                        <h3>&quot;SDK not initialized&quot; Warning</h3>
+                        <p><strong>Cause:</strong> Forgot to call <code>InAppNotifier.init()</code>.</p>
+                        <p><strong>Solution:</strong> Add initialization in Application class.</p>
+                        <div class="file-label">File: MyApplication.kt</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        InAppNotifier.init(this, &quot;user_id&quot;)
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h3>Buttons Not Showing</h3>
+                        <p><strong>Cause:</strong> Backend not sending SDUI fields.</p>
+                        <p><strong>Solution:</strong> Check your backend logs. Ensure <code>btn_positive</code> and <code>btn_negative</code> fields are included in the JSON response.</p>
+                    </div>
+
+                    <div class="step">
+                        <h3>Notification Position Wrong</h3>
+                        <p><strong>Cause:</strong> Invalid position value or <code>null</code>.</p>
+                        <p><strong>Solution:</strong> Backend must send valid values: <code>TOP</code>, <code>CENTER</code>, or <code>BOTTOM</code> (case-insensitive). The SDK defaults to <code>CENTER</code> if invalid.</p>
+                    </div>
+
+                    <div class="step">
+                        <h3>Images Not Loading</h3>
+                        <p><strong>Cause:</strong> Invalid URL or network error.</p>
+                        <p><strong>Solution:</strong></p>
+                        <ol class="text-list">
+                            <li>Verify the URL is accessible.</li>
+                            <li>Ensure INTERNET permission is granted (added automatically by the library).</li>
+                            <li>Provide a fallback image.</li>
+                        </ol>
+                        <div class="file-label">File: Activity/Fragment</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Kotlin</span></div>
+                        <pre class="language-kotlin"><code class="language-kotlin">InAppNotifier.showNotificationPopup(
+    context = this,
+    notification = notification,
+    fallbackImageRes = R.drawable.fallback_image
+)</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <h3>Deep Links Not Opening</h3>
+                        <p><strong>Cause:</strong> Invalid URL format.</p>
+                        <p><strong>Solution:</strong> The SDK automatically normalizes URLs (adds <code>https://</code> if missing), but ensure:</p>
+                        <ul class="check-list">
+                            <li>URL is valid.</li>
+                            <li>The app has permission to open the Intent.</li>
+                            <li>For custom schemes such as <code>myapp://</code>, Intent filters are configured.</li>
+                        </ul>
+                    </div>
+
+                    <div class="step">
+                        <h3>Crashes Not Reported</h3>
+                        <p><strong>Cause:</strong> Crash happens before initialization.</p>
+                        <p><strong>Solution:</strong> Initialize the SDK as early as possible in the Application class.</p>
+                    </div>
+
+                    <div class="step">
+                        <h3>Debugging</h3>
+                        <p>Enable verbose logging and inspect SDK behavior.</p>
+                        <div class="file-label">File: Terminal / ADB session</div>
+                        <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Bash</span></div>
+                        <pre class="language-bash"><code class="language-bash">adb logcat | grep InAppNotifier</code></pre>
+                        <p>Check logs for:</p>
+                        <ul class="check-list">
+                            <li>Initialization status</li>
+                            <li>API request/response data</li>
+                            <li>SDUI field values</li>
+                            <li>Error messages</li>
+                        </ul>
+                    </div>
+                </section>
+
+
+                <section id="license" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-license" aria-hidden="true"></span>
+                        <h2>License</h2>
+                    </div>
+                    <div class="file-label">File: LICENSE</div>
+                    <div class="prism-header"><div class="prism-dots"><span></span><span></span><span></span></div><span>Text</span></div>
+                    <pre class="language-bash"><code class="language-bash">MIT License
+
+Copyright (c) 2024 InAppNotifications
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+                    <p>See the <a href="../LICENSE">LICENSE</a> file for details.</p>
+                </section>
+
+                <section id="links-resources" class="section-card">
+                    <div class="section-heading">
+                        <span class="section-icon icon-links" aria-hidden="true"></span>
+                        <h2>Documentation</h2>
+                    </div>
+                    <div class="link-grid">
+                        <a class="link-card" href="https://nereyahillel.github.io/InAppNotificationLibrary/" target="_blank" rel="noreferrer">
+                            <strong>Docs</strong>
+                        </a>
+
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <footer>
+            <strong>Built with ♥ for Android developers | Server-Driven UI Architecture | Production-Ready</strong>
+            <p style="margin-top:10px; color: rgba(255,255,255,0.8);">A polished, responsive documentation page generated from the repository README for the InAppNotifications library.</p>
+            <div class="footer-links">
+                <a class="footer-link" href="https://github.com/NereyaHillel/InAppNotificationLibrary" target="_blank" rel="noreferrer">GitHub Repository</a>
+                <a class="footer-link" href="https://jitpack.io/#NereyaHillel/InAppNotificationLibrary" target="_blank" rel="noreferrer">JitPack Package</a>
+                <a class="footer-link" href="https://nereyahillel.github.io/InAppNotificationLibrary/" target="_blank" rel="noreferrer">Published Docs</a>
+                <a class="footer-link" href="https://github.com/NereyaHillel/InAppNotificationLibrary/issues" target="_blank" rel="noreferrer">Issue Tracker</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-kotlin.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" defer></script>
 </body>
 </html>
