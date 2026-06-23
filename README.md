@@ -176,7 +176,7 @@ Displays notification dialog with customizable buttons and positioning.
 
 Reports crashes (called automatically for unhandled exceptions).
 
-For detailed documentation, see [README_COMPLETE.md](README_COMPLETE.md).
+For detailed documentation, see [complete API reference](https://nereyahillel.github.io/InAppNotificationLibrary/).
 
 ---
 
@@ -296,4 +296,4 @@ MIT License - see [LICENSE](LICENSE)
 
 ---
 
-**For complete documentation, see [docs](https://google.com)**
+**For complete documentation and API reference, visit the [full documentation site](https://nereyahillel.github.io/InAppNotificationLibrary/)**
