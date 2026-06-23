@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">InAppNotifications</string>
+
+    <!-- Notification Dialog Defaults -->
+    <string name="notification_default_title">Notification</string>
+    <string name="notification_default_dismiss">Dismiss</string>
+
+    <!-- Button Labels -->
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_close">Close</string>
+</resources>
