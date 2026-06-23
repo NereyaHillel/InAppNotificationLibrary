@@ -44,10 +44,8 @@ internal object ApiClient {
             .writeTimeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 val request = chain.request()
-                Log.d(TAG, "HTTP Request: ${request.method} ${request.url}")
                 val response = chain.proceed(request)
                 val responseBody = response.peekBody(Long.MAX_VALUE)
-                Log.d(TAG, "HTTP Response: ${response.code} - Body: ${responseBody.string()}")
                 response
             }
             .build()
