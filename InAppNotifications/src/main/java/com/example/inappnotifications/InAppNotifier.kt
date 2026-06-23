@@ -52,7 +52,7 @@ object InAppNotifier {
     // State Management
     private var isInitialized = false
     private var currentUserId = ""
-    private var currentDeviceName = ""
+    private var currentDeviceModel = ""
     private var currentDeviceId = ""
 
     private lateinit var apiService: NotificationApiService
@@ -75,9 +75,7 @@ object InAppNotifier {
         }
 
         currentUserId = userId
-        @Suppress("DEPRECATION")
-        currentDeviceName = Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME)
-            ?: "unknown_device"
+        currentDeviceModel = android.os.Build.MODEL ?: "unknown_model"
         @Suppress("HardwareIds")
         currentDeviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
             ?: "unknown_device"
@@ -122,7 +120,7 @@ object InAppNotifier {
             return false
         }
         return try {
-            val request = RegisterDeviceRequest(currentDeviceName, currentDeviceId, currentUserId)
+            val request = RegisterDeviceRequest(currentDeviceModel, currentDeviceId, currentUserId)
             val response = apiService.registerDevice(request)
             if (response.isSuccessful) {
                 Log.d(TAG, "Device registered successfully")
