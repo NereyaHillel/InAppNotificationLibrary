@@ -25,6 +25,16 @@ A professional, production-ready Android library implementing **Server-Driven UI
 - **Minimal Code** - 93% less boilerplate compared to traditional implementations
 
 ---
+## Portal Link
+### 🌟 Portal Capabilities
+* **Visual Campaign Builder:** Instantly push new messages, images, and button texts to all registered Android devices.
+* **Dynamic Routing Engine:** Define custom deep links (`myapp://`), App Links (`https://`), or Google Play Store links (`market://`) that the SDK will autonomously parse and execute.
+* **Layout Control:** Change the visual presentation layer on the fly (TOP, CENTER, or BOTTOM positioning).
+* **Live Analytics:** Track real-time Delivery Rates, Open Rates, and Click-Through Rates (CTR) across all active campaigns.
+
+[🚀 **Access the Live Admin Portal**](https://in-app-notifications-api.vercel.app/)
+
+---
 
 ## Table of Contents
 
