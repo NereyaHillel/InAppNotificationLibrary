@@ -1,10 +1,10 @@
 # InAppNotifications
 
+
 [![](https://jitpack.io/v/NereyaHillel/InAppNotificationLibrary.svg)](https://jitpack.io/#NereyaHillel/InAppNotificationLibrary)
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=24)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Language](https://img.shields.io/badge/Language-Kotlin-blue.svg)](https://kotlinlang.org/)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/NereyaHillel/InAppNotifications)
 
 A professional, production-ready Android library implementing **Server-Driven UI (SDUI)** architecture for in-app notifications. The backend controls all UI aspects (buttons, positioning, images, deep links) while the SDK acts as an autonomous rendering and routing engine. Built entirely in Kotlin with modern Android architecture (Coroutines, Retrofit, Gson, OkHttp, Glide).
 
