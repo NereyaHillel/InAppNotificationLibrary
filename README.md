@@ -418,11 +418,16 @@ lifecycleScope.launch {
 
 ---
 
-## Backend Integration
+## ⚙️ Backend Integration
+
+This SDK requires a compatible backend to serve the Server-Driven UI (SDUI) JSON payloads, manage campaigns, and track analytics.
+
+**Don't want to build it from scratch?**
+The complete, production-ready Python/Flask backend and Admin Portal used in this project is open-source and available here:
+🔗 [**GitHub: NereyaHillel/InAppNotificationsAPI**](https://github.com/NereyaHillel/InAppNotificationsAPI)
 
 ### Required API Endpoints
-
-Your backend must implement these endpoints:
+If you are building your own custom backend, your server must implement these exact endpoints:
 
 #### 1. Register Device
 ```
@@ -633,13 +638,13 @@ See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Links & Resources
+## 🔗 Links & Resources
 
+- **Live Admin Portal:** [https://in-app-notifications-api.vercel.app/](https://in-app-notifications-api.vercel.app/)
+- **Android SDK Repository:** [https://github.com/NereyaHillel/InAppNotificationLibrary](https://github.com/NereyaHillel/InAppNotificationLibrary)
+- **Backend API Repository:** [https://github.com/NereyaHillel/InAppNotificationsAPI](https://github.com/NereyaHillel/InAppNotificationsAPI)
 - **Documentation:** [https://nereyahillel.github.io/InAppNotificationLibrary/](https://nereyahillel.github.io/InAppNotificationLibrary/)
-- **GitHub:** [https://github.com/NereyaHillel/InAppNotificationLibrary](https://github.com/NereyaHillel/InAppNotificationLibrary)
 - **JitPack:** [https://jitpack.io/#NereyaHillel/InAppNotificationLibrary](https://jitpack.io/#NereyaHillel/InAppNotificationLibrary)
-- **Issues:** [https://github.com/NereyaHillel/InAppNotificationLibrary/issues](https://github.com/NereyaHillel/InAppNotificationLibrary/issues)
-
 ---
 
 **Built with ♥ for Android developers | Server-Driven UI Architecture | Production-Ready**
