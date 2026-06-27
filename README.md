@@ -1,6 +1,3 @@
-
-
-
 # InAppNotifications
 
 
@@ -13,7 +10,8 @@ A professional, production-ready Android library implementing **Server-Driven UI
 
 <div align="center">
   <video src="https://github.com/user-attachments/assets/4a8af908-11f1-4768-bbb3-f69fb2b55471" width="100%" controls autoplay loop muted></video>
-</div>---
+</div>
+---
 
 ## Key Features
 
@@ -224,10 +222,10 @@ The backend JSON payload dictates:
       "_id": "notif_123",
       "campaign_id": "camp_456",
       "title": "Special Offer!",
-      "message": "Get 50% off your next purchase",
       "status": "delivered",
       
       // SDUI Fields (all optional)
+      "message": "Get 50% off your next purchase",
       "position": "CENTER",
       "image_url": "https://example.com/offer.jpg",
       "link": "https://example.com/shop/special-offer",
