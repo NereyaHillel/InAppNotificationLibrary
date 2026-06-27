@@ -1,5 +1,11 @@
 # InAppNotifications
 
+<div align="center">
+  <a href="https://youtu.be/SL8Y4JsiRuo" target="_blank">
+    <img src="https://raw.githubusercontent.com/NereyaHillel/InAppNotificationLibrary/main/docs/video-thumbnail.jpg" alt="In-App Notifications SDK Demo Video" width="100%" style="border-radius: 12px; max-width: 800px;">
+  </a>
+</div>
+
 
 [![](https://jitpack.io/v/NereyaHillel/InAppNotificationLibrary.svg)](https://jitpack.io/#NereyaHillel/InAppNotificationLibrary)
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=24)
