@@ -489,7 +489,6 @@ object InAppNotifier {
         try {
             Glide.with(context)
                 .load(imageUrl)
-                .placeholder(fallbackImageRes)
                 .error(fallbackImageRes)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(imageView)
