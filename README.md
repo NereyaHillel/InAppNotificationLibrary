@@ -48,6 +48,7 @@ A professional, production-ready Android library implementing **Server-Driven UI
 - [Best Practices](#best-practices)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
+- [Links & Resources](#Links & Resources)
 
 ---
 
@@ -74,7 +75,7 @@ dependencyResolutionManagement {
 
 ```kotlin
 dependencies {
-    implementation("com.github.NereyaHillel:InAppNotificationLibrary:2.0.0")
+    implementation("com.github.NereyaHillel:InAppNotificationLibrary:TAG")
 }
 ```
 
