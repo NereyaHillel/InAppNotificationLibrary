@@ -1,3 +1,6 @@
+
+
+
 # InAppNotifications
 
 
@@ -8,6 +11,7 @@
 
 A professional, production-ready Android library implementing **Server-Driven UI (SDUI)** architecture for in-app notifications. The backend controls all UI aspects (buttons, positioning, images, deep links) while the SDK acts as an autonomous rendering and routing engine. Built entirely in Kotlin with modern Android architecture (Coroutines, Retrofit, Gson, OkHttp, Glide).
 
+https://github.com/user-attachments/assets/4a8af908-11f1-4768-bbb3-f69fb2b55471
 ---
 
 ## Key Features
